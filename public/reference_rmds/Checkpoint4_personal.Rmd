@@ -1,0 +1,115 @@
+---
+title: "Checkpoint 4 Work"
+author: "Raven McKnight"
+date: "4/14/2019"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: paper
+---
+
+```{r include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(sf)
+library(urbnmapr)
+library(wesanderson)
+```
+
+
+```{r}
+nonWorkingData <- read_csv("/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv")
+
+newCounties <- urbnmapr::counties %>%
+  mutate(fips = as.numeric(county_fips))
+
+
+spatialWorkingData <- full_join(nonWorkingData, newCounties, by ="fips")
+```
+
+# New Visualizations
+
+Now that I have spatial data, we can look at maps. First, lets look at where contraceptive deserts in the US are. 
+```{r}
+ggplot() +
+  geom_polygon(data = spatialWorkingData, mapping = aes(x = long, y = lat, group = group, fill = spatialWorkingData$desert), color = "NA") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
+  theme_minimal()
+
+
+spatialWorkingData <- spatialWorkingData %>%
+  mutate(discretePercentRural = round(PercRural*100)) %>%
+  mutate(discPercRural = as.factor(discretePercentRural))
+
+
+# not great, ridic way to deal with continuous values discrete scale
+
+
+# ggplot() +
+#   geom_polygon(data = spatialWorkingData, mapping = aes(x = long, y = lat, group = group, fill = spatialWorkingData$discPercRural), color = "NA") +
+#   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+#   scale_fill_manual(values=wes_palette(n=101, name = "GrandBudapest2", type="continuous")) +
+#   theme(legend.position="none") +
+#   theme_minimal() 
+```
+
+We can also summarize what we do know about counties missing data. Most are missing information about the number of clinics. 
+```{r}
+countiesMissingData <- nonWorkingData %>%
+  filter(is.na(WomenPerClinic)) %>%
+  select(TotalWomen, TotalWomenUnder20, TotalPop, MedianInc, PercHSGrad, PercPoverty, PercWhite, obamaPercent)
+
+# selection for summary purposes
+
+summary(countiesMissingData)
+```
+
+We also see that region is a related
+```{r}
+checkpoint_working_data <- nonWorkingData %>%
+  mutate(Desert = as.factor(desert)) %>%
+  filter(!is.na(WomenPerClinic))
+
+ggplot(checkpoint_working_data, aes(x=Region)) +
+  geom_bar(aes(fill=Desert)) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
+  theme_minimal()
+```
+
+
+```{r}
+cor_data <- na.omit(checkpoint_working_data) %>%
+  select(TotalClinics, TotalWomen, TotalWomenUnder20, TotalPop, MedianInc, PercHSGrad, PercPoverty, PercWhite, PercRural, WomenPerClinic, obamaPercent, Desert) 
+
+
+cor_matrix <- cor(data.matrix(cor_data))
+cor_melt <- melt(cor_matrix)
+# Visualizing the ABSOLUTE correlation
+
+ggplot(cor_melt, aes(x=Var1, y=Var2, fill=value)) + 
+    geom_tile() + 
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+```{r}
+ggplot(nonWorkingData, aes(x=WomenPerClinic)) + 
+  geom_density()
+
+mean(checkpoint_working_data$TotalWomenUnder20)
+```
+
+# Models
+
+simplest model i can think of is just Desert ~ Region
+
+
+*** understanding the metric
+pitch this as a first step in understanding access and thinking about the ways that clinics are funded/where they should go. 
+
+*** check distributions of predictors/outcomes
+*** plot distributions faceted by REGION
+*** Moran's I
+*** mapping potential: hex binning
+*** continuous color theme

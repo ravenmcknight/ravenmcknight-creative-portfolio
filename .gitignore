@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+config.toml
+content/
+static/
+themes/
+.DS_Store
+.netlify/
+index.Rmd
+ravenmcknight.Rproj

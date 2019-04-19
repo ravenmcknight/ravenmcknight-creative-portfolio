@@ -2,8 +2,8 @@
 <html lang="en-us">
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Bayes Checkpoint</title>
-<meta name="description" content="Describe your website">
+<title>Bayes Checkpoint - Draft</title>
+<meta name="description" content="Raven McKnight&#39;s personal website">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
@@ -29,6 +29,17 @@
 <link href="/css/custom.css" rel="stylesheet">
 <link rel="shortcut icon" href="/img/favicon.png">
 
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-138632608-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 </head>
 <body>
@@ -100,9 +111,209 @@
   <div class="row">
     <div class="col-lg-8">
       <div class="content-column-content">
-         <h1>Bayes Checkpoint</h1>
+         <h1>Bayes Checkpoint - Draft</h1>
          
-         
+
+
+<p>Birth control is a critical aspect of basic health care. Accessible contraceptive services have numerous tangible benefits from reducing teen pregnancy to lowering abortion rates. At the most basic level, birth control empowers women to navigate the world and their health more freely. The “pro-life” movement and current political climate put this vital resource at risk. With this in mind, I decided to study access to birth control in the United States.</p>
+<p>This project was initially inspired by a map by <a href="https://powertodecide.org/what-we-do/access/access-birth-control">Power to Decide</a>. Based on the work of Richard Cooper, MD, this organization defines a <em>contraceptive desert</em> as a region where there are fewer than one birth control provider per 1000 women in need. This map (and my project) focus on publicly funded services and the women who need them.</p>
+<p>Admittedly, access is more nuanced than the simple presence of clinics. There are many other factors to consider: physical accessibility (proximity to transit lines, etc), stigma, undereducation regarding contraception, or any other number of personal characteristics. I’m considering this simple ratio of women per clinic as a first step in studying birth control accessibility.</p>
+<p>For this project, I use county-level data about women in need of services and service providers collected by the Guttmacher Institute from 2014-2015. My deomgraphic data is drawn from 2015 ACS 5-year estimates and my county boundaries from the Urban Institue.</p>
+<div id="the-data" class="section level3">
+<h3>The Data</h3>
+<p>First, let’s load the packages we’ll need.</p>
+<pre class="r"><code>library(ggplot2)
+library(tidyverse)
+library(urbnmapr)
+library(wesanderson)</code></pre>
+<p>Now, we can load the data: <code>bc</code> is a dataframe of cleaned ACS and Guttmacher data. <code>bc_spatial</code> is the same data joined to county boundaries from the Urban Institute!</p>
+<pre class="r"><code>bc &lt;- read_csv(&quot;/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv&quot;)
+
+counties &lt;- urbnmapr::counties %&gt;%
+  mutate(fips = as.numeric(county_fips))  # create field to join on
+
+bc_spatial &lt;- full_join(bc, counties, by =&quot;fips&quot;)   # join with county data from urbnmapr</code></pre>
+<p>For this analysis, we’ll focus on the following predictors.</p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="81%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>variable</strong></th>
+<th><strong>meaning</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TotalClinics</td>
+<td>Number of publicly funded clinics providing birth control services by county, Guttmacher</td>
+</tr>
+<tr class="even">
+<td>TotalWomen</td>
+<td>Total women age 13-44 who can become pregnant but don’t want to <em>and</em> who need publicly funded contraceptives, Guttmacher</td>
+</tr>
+<tr class="odd">
+<td>TotalWomenUnder20</td>
+<td>Total women under 20 who need publicly funded services, Guttmacher</td>
+</tr>
+<tr class="even">
+<td>TotalPop</td>
+<td>Total county population, ACS 2015</td>
+</tr>
+<tr class="odd">
+<td>MedianInc</td>
+<td>Median county income, ACS 2015</td>
+</tr>
+<tr class="even">
+<td>PercHSGrad</td>
+<td>Percent of county with high school diploma or equivalent, ACS 2015</td>
+</tr>
+<tr class="odd">
+<td>PercPoverty</td>
+<td>Percent of county living below poverty line, ACS 2015</td>
+</tr>
+<tr class="even">
+<td>PercWhite, PercBlack ….</td>
+<td>Seven variables recording racial demographics of each county, ACS 2015</td>
+</tr>
+<tr class="odd">
+<td>PercRural</td>
+<td>Percent of population living in rural area, ACS 2015</td>
+</tr>
+<tr class="even">
+<td>Region</td>
+<td>Categorical variable recording US region for each state</td>
+</tr>
+<tr class="odd">
+<td>ObamaPercent</td>
+<td>Percent of the 2012 vote Obama got by <em>state</em></td>
+</tr>
+<tr class="even">
+<td>WomenPerClinic</td>
+<td>Simple ratio of TotalWomen/TotalClinics</td>
+</tr>
+<tr class="odd">
+<td>Desert</td>
+<td>Simple yes/no categorical variable, is the county a desert?</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="visualization-and-exploration" class="section level3">
+<h3>Visualization and Exploration</h3>
+<p>A natural first visualization is to check where contraceptive deserts in the United States are. We can map the simple yes/no <code>desert</code> variable to get a sense of where there’s less than one clinic per 1000 women in need.</p>
+<pre class="r"><code>bc_spatial_na &lt;- bc_spatial %&gt;%
+  filter(!is.na(desert))   # remove NAs for mapping
+
+ggplot() +
+  geom_polygon(data = bc_spatial_na, mapping = aes(x = long, y = lat, group = group, fill = bc_spatial_na$desert), color = &quot;NA&quot;) +
+  coord_map(projection = &quot;albers&quot;, lat0 = 39, lat1 = 45) +
+  scale_fill_manual(values=wes_palette(n=3, name=&quot;GrandBudapest2&quot;)) +
+  labs(x=&quot;&quot;, y=&quot;&quot;) +
+  guides(fill=guide_legend(title=&quot;Desert&quot;)) + 
+  theme_minimal()</code></pre>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We are missing a lot of data about rural counties in the middle of the country. Many of these counties simply don’t report how many birth control clinics they have. By summarizing, we can see that these counties tend to be more rural and less highly populated than those counties which do report clinic data.</p>
+<pre class="r"><code>counties_missing_data &lt;- bc %&gt;%
+  filter(is.na(WomenPerClinic)) %&gt;%
+  select(TotalWomen, TotalWomenUnder20, TotalPop, MedianInc, PercHSGrad, PercRural, PercPoverty, PercWhite, obamaPercent)  # selection for summary purposes
+
+sapply(counties_missing_data, mean, na.rm=TRUE)</code></pre>
+<pre><code>##        TotalWomen TotalWomenUnder20          TotalPop         MedianInc 
+##            989.98            301.23          30534.03          49848.04 
+##        PercHSGrad         PercRural       PercPoverty         PercWhite 
+##             87.44              0.71              0.13             88.28 
+##      obamaPercent 
+##              0.45</code></pre>
+<pre class="r"><code>no_missing_data &lt;- bc %&gt;%
+  filter(!is.na(WomenPerClinic)) %&gt;%
+  select(TotalWomen, TotalWomenUnder20, TotalPop, MedianInc, PercHSGrad, PercRural, PercPoverty, PercWhite, obamaPercent)  # selection for summary purposes
+
+sapply(no_missing_data, mean, na.rm=TRUE)</code></pre>
+<pre><code>##        TotalWomen TotalWomenUnder20          TotalPop         MedianInc 
+##           7637.39           1768.57         116262.11          46029.17 
+##        PercHSGrad         PercRural       PercPoverty         PercWhite 
+##             84.90              0.55              0.17             81.99 
+##      obamaPercent 
+##              0.46</code></pre>
+<p>Region is one of the most obvious predictors to explore. We might expect the South to have the most deserts in the country. However, as we can see below, only about half of the counties in the South (of which there are many!) are deserts. The Midwest and Northeast appear to have the highest proportion of deserts. These regions likely experience deserts for different reasons–the Midwest may have limited access due to prevailing political or religious beliefs and rurality while the Northeast likely suffers more due to high populations.</p>
+<pre class="r"><code>bc_na &lt;- bc %&gt;%
+  filter(!is.na(desert))
+
+ggplot(bc_na, aes(x=Region)) +
+  geom_bar(aes(fill=desert)) +
+  scale_fill_manual(values=wes_palette(n=3, name=&quot;GrandBudapest2&quot;)) +
+  theme_minimal()</code></pre>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>One major limitation of this study is that any county with fewer than 1000 women in need cannot be defined as a desert, even if there are 0 clinics reported!</p>
+<pre class="r"><code>ggplot(bc_na, aes(x=as.numeric(TotalPop))) +
+  geom_histogram(fill=&quot;#E6A0C4&quot;) +
+  facet_wrap(~desert, scales=&quot;free&quot;) +
+  lims(x= c(0, 200000)) +
+  labs(x=&quot;Total Population&quot;, y=&quot;Count&quot;) +
+  theme_minimal()</code></pre>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Before we build models, we can check how our outcome (desert or women per clinic) compares to our key predictors. For the sake of visualization, I’ll plot women per clinic here.</p>
+<pre class="r"><code>predictors %&gt;%
+  gather(-WomenPerClinic, -TotalWomen, -TotalPop, -TotalWomenUnder20, key = &quot;var&quot;, value = &quot;value&quot;) %&gt;%
+  ggplot(aes(x = value, y = WomenPerClinic)) +
+    geom_point(color=&quot;#C6CDF7&quot;) +
+    facet_wrap(~ var, scales = &quot;free&quot;) +
+    lims(y=c(0, 10000)) +   # cutting off a fair amount of data for clarity
+    theme_minimal()</code></pre>
+<pre><code>## Warning: Removed 653 rows containing missing values (geom_point).</code></pre>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>We can also start to understand the characteristics of deserts with some numerical summaries:</p>
+<pre class="r"><code>deserts &lt;- bc %&gt;%
+  filter(desert==&quot;Yes&quot;) %&gt;%
+  select(TotalWomen, TotalWomenUnder20, TotalPop, MedianInc, PercHSGrad, PercRural, PercPoverty, PercWhite, obamaPercent)  # selection for summary purposes
+
+sapply(deserts, mean, na.rm=TRUE)</code></pre>
+<pre><code>##        TotalWomen TotalWomenUnder20          TotalPop         MedianInc 
+##          13902.73           3194.34         210324.53          50298.08 
+##        PercHSGrad         PercRural       PercPoverty         PercWhite 
+##             86.35              0.38              0.16             81.68 
+##      obamaPercent 
+##              0.46</code></pre>
+<pre class="r"><code>not_deserts &lt;- bc %&gt;%
+  filter(desert == &quot;No&quot;) %&gt;%
+  select(TotalWomen, TotalWomenUnder20, TotalPop, MedianInc, PercHSGrad, PercRural, PercPoverty, PercWhite, obamaPercent)  # selection for summary purposes
+
+sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
+<pre><code>##        TotalWomen TotalWomenUnder20          TotalPop         MedianInc 
+##           1648.53            405.72          26350.59          41948.65 
+##        PercHSGrad         PercRural       PercPoverty         PercWhite 
+##             83.50              0.73              0.18             82.32 
+##      obamaPercent 
+##              0.45</code></pre>
+</div>
+<div id="next-steps" class="section level3">
+<h3>Next steps</h3>
+<p>At this point in the project, I’m considering redefining the criteria for being a desert. There isn’t much existing literature so I might need to get creative. 2000 women per clinic may be a more reasonable metric than 1000, for example. Once I have my outcome variable better defined I will be ready to start building models!</p>
+</div>
+
+         <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "@ravenmcknight" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
       </div>
     </div>
   </div>
