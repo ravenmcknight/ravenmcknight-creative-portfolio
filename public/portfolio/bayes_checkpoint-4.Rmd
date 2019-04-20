@@ -1,5 +1,5 @@
 ---
-title: "Bayes Checkpoint - Draft"
+title: "Spatial Bayes Introduction"
 author: "Raven McKnight"
 date: "4/14/2019"
 draft: true
@@ -19,10 +19,10 @@ For this project, I use county-level data about women in need of services and se
 
 First, let's load the packages we'll need. 
 ```{r warning=FALSE, message=FALSE}
-library(ggplot2)
-library(tidyverse)
 library(urbnmapr)
 library(wesanderson)
+library(rjags)
+library(tidyverse)
 ```
 
 
@@ -66,7 +66,7 @@ predictors <- bc %>%
 summary(predictors)
 ```
 
-
+\\
 
 ### Visualization and Exploration
 
@@ -161,8 +161,79 @@ not_deserts <- bc %>%
 sapply(not_deserts, mean, na.rm=TRUE)
 ```
 
-### Next steps
+### Inital Model
 
-At this point in the project, I'm considering redefining the criteria for being a desert. There isn't much existing literature so I might need to get creative. 2000 women per clinic may be a more reasonable metric than 1000, for example. Once I have my outcome variable better defined I will be ready to start building models!
+We'll start by implementing simple, non-spatial models. I think the most intutive predictor is region, so we'll start my modeling `WomenPerClinic` by `Region`. 
+
+Based on previous data exploration, I expect `WomenPerClinic` to be approximately normally distributed around a different mean for each region. There are five regions in our dataset: West, Midwest, Northeast, South, and Southwest, so I'll create a beta prior for each of those. 
 
 
+Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I'm giving each of the beta_i parameters vague priors. We can use the `RJAGS` package to simulate this model!
+
+```{r}
+bc_na <- bc_na %>%
+  mutate(Region = as.factor(Region))
+
+levels(bc_na$Region)
+```
+
+First, we'll create some indicator variables for the five regions:
+```{r}
+indicatorNortheast <- rep(0, nrow(bc_na))
+indicatorSouth <- rep(0, nrow(bc_na))
+indicatorSouthwest <- rep(0, nrow(bc_na))
+indicatorWest <- rep(0, nrow(bc_na))
+
+for(i in 1:nrow(bc_na)){
+  indicatorNortheast[i] <- if_else(bc_na$Region[i]=="Northeast", 1, 0)
+  indicatorSouth[i] <- if_else(bc_na$Region[i] == "South", 1, 0)
+  indicatorSouthwest[i] <- if_else(bc_na$Region[i]=="Southwest", 1,0)
+  indicatorWest[i] <- if_else(bc_na$Region[i]=="West", 1, 0)
+}
+```
+
+Then, simulate!
+```{r}
+cap_mod_2 <- "model{
+  # Model for Y
+  for(i in 1:length(y)){
+    y[i] ~ dnorm(beta0 + beta1[2]*indicatorNortheast[i] + beta1[3]*indicatorSouth[i] + beta1[4]*indicatorSouthwest[i]+ beta1[5]*indicatorWest[i], tau)
+  }
+  
+  beta0 ~ dnorm(0, 1/1000)
+  beta1[1] <- 0
+  beta1[2] ~ dnorm(0, taub)
+  beta1[3] ~ dnorm(0, taub)
+  beta1[4] ~ dnorm(0, taub)
+  beta1[5] ~ dnorm(0, taub)
+  tau   ~ dgamma(7, 10000)
+  taub   ~ dgamma(7, 10000)
+
+}"    
+
+cap_jags_2 <- jags.model(textConnection(cap_mod_2),
+                         data=list(y=bc_na$WomenPerClinic, indicatorWest=indicatorWest, indicatorNortheast=indicatorNortheast, indicatorSouth=indicatorSouth, indicatorSouthwest=indicatorSouthwest),
+                         inits = list(.RNG.name ="base::Wichmann-Hill", .RNG.seed = 454))
+
+cap_sim_2 <- coda.samples(cap_jags_2, 
+                          variable.names=c("beta0", "beta1[2]", "beta1[3]", "beta1[3]", "beta1[4]", "beta1[5]", "tau", "taub"),
+                          n.iter=10000)
+
+cap_chains_2 <- data.frame(iteration = 1:10000, cap_sim_2[[1]])
+```
+
+Let's check out our simulation: 
+```{r}
+plot(cap_sim_2)
+```
+
+As we can see from the trace plots, my priors were way off to start. However, they stabilized very quickly! We can also check out the coefficient estimates below. 
+
+```{r}
+summary(cap_sim_2)
+```
+
+
+These coefficients confirm some intuition! We see that the Midwest has a deceptively low intercept because of missing data. The Northeast has the highest coefficient, which makes sense because in general, counties in the Northeast have the highest population. The South and Southwest have similarly high coefficients because of high populations and, if I had to guess, general political climate. The West has a slightly lower coefficient, likely because so much of the West is rural and/or progressive. 
+
+This model starts to describe our data. However, we can do better! Moving forward, we will implement spatial conditional autogregressive models to better understand the spatial and hierarchical aspects of the data. 

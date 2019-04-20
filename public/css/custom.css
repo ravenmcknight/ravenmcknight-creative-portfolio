@@ -1,1 +1,50 @@
 /* your styles go here */
+
+
+@import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Comfortaa|Righteous');
+@import url('https://fonts.googleapis.com/css?family=Lato|Oswald');
+
+
+
+.sidebar-heading a {
+	font-size: 30px;
+	font-family: 'Oswald', cursive;
+	text-transform: uppercase;
+}
+
+.box-masonry-description p {
+	font-family: 'Lato'
+}
+
+.sidebar-p {
+	font-family: 'Lato';
+	font-size: 16px;
+	color: #606060;
+}
+
+.content-column-content h1 {
+	font-family: 'Oswald', cursive;
+	text-transform: uppercase;
+}
+
+.content-column-content h2 {
+	font-family: 'Oswald', cursive;
+	text-transform: uppercase;
+}
+
+.content-column-content h3 {
+	font-family: 'Oswald', cursive;
+	text-transform: uppercase;
+}
+
+.content-column-content p {
+	font-family: 'Lato';
+	color: #606060;
+}
+
+
+}
+h4 a {
+	color: #8e8d8a;
+	font-family: 'Oswald', cursive
+}

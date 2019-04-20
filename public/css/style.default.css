@@ -331,7 +331,7 @@ SIDEBAR + RIGHT COLUMN
 }
 .sidebar-heading {
   font-size: 18px;
-  text-transform: uppercase;
+  text-transform: lowercase;
   letter-spacing: 0.1em;
 }
 .sidebar-heading a {
@@ -1970,6 +1970,7 @@ h4,
 .h4 {
   font-size: 24px;
   font-weight: 700;
+  text-transform: uppercasee;
 }
 h5,
 .h5 {

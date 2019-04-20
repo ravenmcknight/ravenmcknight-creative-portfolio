@@ -2,7 +2,7 @@
 <html lang="en-us">
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Bayes Checkpoint - Draft</title>
+<title>Spatial Bayes Introduction</title>
 <meta name="description" content="Raven McKnight&#39;s personal website">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
@@ -48,7 +48,7 @@ if (!doNotTrack) {
           <div class="row row-offcanvas row-offcanvas-left">
               <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
   <div class="sidebar-content">
-    <h1 class="sidebar-heading"><a href="/">Raven McKnight</a></h1>
+    <h1 class="sidebar-heading"><a href="/">raven mcknight</a></h1>
     
       <p class="sidebar-p">stats! data science! visualization!</p>
     
@@ -105,13 +105,13 @@ if (!doNotTrack) {
 <div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
   <div class="small-navbar visible-xs">
   <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
-  <h1 class="small-navbar-heading"><a href="/">Raven McKnight</a></h1>
+  <h1 class="small-navbar-heading"><a href="/">raven mcknight</a></h1>
 </div>
 
   <div class="row">
     <div class="col-lg-8">
       <div class="content-column-content">
-         <h1>Bayes Checkpoint - Draft</h1>
+         <h1>Spatial Bayes Introduction</h1>
          
 
 
@@ -122,10 +122,10 @@ if (!doNotTrack) {
 <div id="the-data" class="section level3">
 <h3>The Data</h3>
 <p>First, let’s load the packages we’ll need.</p>
-<pre class="r"><code>library(ggplot2)
-library(tidyverse)
-library(urbnmapr)
-library(wesanderson)</code></pre>
+<pre class="r"><code>library(urbnmapr)
+library(wesanderson)
+library(rjags)
+library(tidyverse)</code></pre>
 <p>Now, we can load the data: <code>bc</code> is a dataframe of cleaned ACS and Guttmacher data. <code>bc_spatial</code> is the same data joined to county boundaries from the Urban Institute!</p>
 <pre class="r"><code>bc &lt;- read_csv(&quot;/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv&quot;)
 
@@ -200,6 +200,7 @@ bc_spatial &lt;- full_join(bc, counties, by =&quot;fips&quot;)   # join with cou
 </tr>
 </tbody>
 </table>
+<p>\</p>
 </div>
 <div id="visualization-and-exploration" class="section level3">
 <h3>Visualization and Exploration</h3>
@@ -289,9 +290,107 @@ sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
 ##      obamaPercent 
 ##              0.45</code></pre>
 </div>
-<div id="next-steps" class="section level3">
-<h3>Next steps</h3>
-<p>At this point in the project, I’m considering redefining the criteria for being a desert. There isn’t much existing literature so I might need to get creative. 2000 women per clinic may be a more reasonable metric than 1000, for example. Once I have my outcome variable better defined I will be ready to start building models!</p>
+<div id="inital-model" class="section level3">
+<h3>Inital Model</h3>
+<p>We’ll start by implementing simple, non-spatial models. I think the most intutive predictor is region, so we’ll start my modeling <code>WomenPerClinic</code> by <code>Region</code>.</p>
+<p>Based on previous data exploration, I expect <code>WomenPerClinic</code> to be approximately normally distributed around a different mean for each region. There are five regions in our dataset: West, Midwest, Northeast, South, and Southwest, so I’ll create a beta prior for each of those.</p>
+<p>Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I’m giving each of the beta_i parameters vague priors. We can use the <code>RJAGS</code> package to simulate this model!</p>
+<pre class="r"><code>bc_na &lt;- bc_na %&gt;%
+  mutate(Region = as.factor(Region))
+
+levels(bc_na$Region)</code></pre>
+<pre><code>## [1] &quot;Midwest&quot;   &quot;Northeast&quot; &quot;South&quot;     &quot;Southwest&quot; &quot;West&quot;</code></pre>
+<p>First, we’ll create some indicator variables for the five regions:</p>
+<pre class="r"><code>indicatorNortheast &lt;- rep(0, nrow(bc_na))
+indicatorSouth &lt;- rep(0, nrow(bc_na))
+indicatorSouthwest &lt;- rep(0, nrow(bc_na))
+indicatorWest &lt;- rep(0, nrow(bc_na))
+
+for(i in 1:nrow(bc_na)){
+  indicatorNortheast[i] &lt;- if_else(bc_na$Region[i]==&quot;Northeast&quot;, 1, 0)
+  indicatorSouth[i] &lt;- if_else(bc_na$Region[i] == &quot;South&quot;, 1, 0)
+  indicatorSouthwest[i] &lt;- if_else(bc_na$Region[i]==&quot;Southwest&quot;, 1,0)
+  indicatorWest[i] &lt;- if_else(bc_na$Region[i]==&quot;West&quot;, 1, 0)
+}</code></pre>
+<p>Then, simulate!</p>
+<pre class="r"><code>cap_mod_2 &lt;- &quot;model{
+  # Model for Y
+  for(i in 1:length(y)){
+    y[i] ~ dnorm(beta0 + beta1[2]*indicatorNortheast[i] + beta1[3]*indicatorSouth[i] + beta1[4]*indicatorSouthwest[i]+ beta1[5]*indicatorWest[i], tau)
+  }
+  
+  beta0 ~ dnorm(0, 1/1000)
+  beta1[1] &lt;- 0
+  beta1[2] ~ dnorm(0, taub)
+  beta1[3] ~ dnorm(0, taub)
+  beta1[4] ~ dnorm(0, taub)
+  beta1[5] ~ dnorm(0, taub)
+  tau   ~ dgamma(7, 10000)
+  taub   ~ dgamma(7, 10000)
+
+}&quot;    
+
+cap_jags_2 &lt;- jags.model(textConnection(cap_mod_2),
+                         data=list(y=bc_na$WomenPerClinic, indicatorWest=indicatorWest, indicatorNortheast=indicatorNortheast, indicatorSouth=indicatorSouth, indicatorSouthwest=indicatorSouthwest),
+                         inits = list(.RNG.name =&quot;base::Wichmann-Hill&quot;, .RNG.seed = 454))</code></pre>
+<pre><code>## Compiling model graph
+##    Resolving undeclared variables
+##    Allocating nodes
+## Graph information:
+##    Observed stochastic nodes: 2482
+##    Unobserved stochastic nodes: 7
+##    Total graph size: 12436
+## 
+## Initializing model</code></pre>
+<pre class="r"><code>cap_sim_2 &lt;- coda.samples(cap_jags_2, 
+                          variable.names=c(&quot;beta0&quot;, &quot;beta1[2]&quot;, &quot;beta1[3]&quot;, &quot;beta1[3]&quot;, &quot;beta1[4]&quot;, &quot;beta1[5]&quot;, &quot;tau&quot;, &quot;taub&quot;),
+                          n.iter=10000)</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): Failed to set trace monitor for beta1[3]
+## Monitor already exists and cannot be duplicated</code></pre>
+<pre class="r"><code>cap_chains_2 &lt;- data.frame(iteration = 1:10000, cap_sim_2[[1]])</code></pre>
+<p>Let’s check out our simulation:</p>
+<pre class="r"><code>plot(cap_sim_2)</code></pre>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-16-1.png" width="672" /><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<p>As we can see from the trace plots, my priors were way off to start. However, they stabilized very quickly! We can also check out the coefficient estimates below.</p>
+<pre class="r"><code>summary(cap_sim_2)</code></pre>
+<pre><code>## 
+## Iterations = 1:10000
+## Thinning interval = 1 
+## Number of chains = 1 
+## Sample size per chain = 10000 
+## 
+## 1. Empirical mean and standard deviation for each variable,
+##    plus standard error of the mean:
+## 
+##                    Mean              SD        Naive SE Time-series SE
+## beta0     241.861981153  33.77589804537 0.3377589804537  0.46849787778
+## beta1[2] 2111.021751813 140.84704343648 1.4084704343648  1.57351464478
+## beta1[3] 1304.810326895  71.78419654818 0.7178419654818  0.91135471792
+## beta1[4] 1321.936671027 134.67186724627 1.3467186724627  1.47943384005
+## beta1[5]  803.947403841 121.20648428105 1.2120648428105  1.32649731708
+## tau         0.000000232   0.00000000681 0.0000000000681  0.00000000000
+## taub        0.000002105   0.00000077233 0.0000000077233  0.00000000849
+## 
+## 2. Quantiles for each variable:
+## 
+##                    2.5%            25%            50%            75%
+## beta0     183.695842546  221.329534819  241.141490026  262.132933732
+## beta1[2] 1839.454898416 2016.277205033 2111.747526739 2204.864461171
+## beta1[3] 1168.960393260 1257.911994228 1305.062797553 1352.951612812
+## beta1[4] 1058.665979398 1231.607398358 1321.700059648 1411.220678590
+## beta1[5]  568.998723028  722.904288640  804.009950635  885.497913749
+## tau         0.000000219    0.000000228    0.000000232    0.000000237
+## taub        0.000000924    0.000001567    0.000002013    0.000002533
+##                     98%
+## beta0     301.582602334
+## beta1[2] 2391.468420462
+## beta1[3] 1439.929634958
+## beta1[4] 1583.391431286
+## beta1[5] 1040.855233861
+## tau         0.000000246
+## taub        0.000003844</code></pre>
+<p>These coefficients confirm some intuition! We see that the Midwest has a deceptively low intercept because of missing data. The Northeast has the highest coefficient, which makes sense because in general, counties in the Northeast have the highest population. The South and Southwest have similarly high coefficients because of high populations and, if I had to guess, general political climate. The West has a slightly lower coefficient, likely because so much of the West is rural and/or progressive.</p>
+<p>This model starts to describe our data. However, we can do better! Moving forward, we will implement spatial conditional autogregressive models to better understand the spatial and hierarchical aspects of the data.</p>
 </div>
 
          <div id="disqus_thread"></div>
@@ -307,7 +406,7 @@ sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
             return;
         }
         var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "@ravenmcknight" + '.disqus.com/embed.js';
+        s.src = '//' + "ravenmcknight" + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
