@@ -322,6 +322,8 @@ SIDEBAR + RIGHT COLUMN
 .sidebar-content {
     z-index: 0;
     padding: 0 1.7em 0 0em;
+    content: /img/portfolio/itme.jpg;
+    
 }
 @media screen and (min-width: 992px) {
   .sidebar-content {
@@ -362,7 +364,7 @@ SIDEBAR + RIGHT COLUMN
   color: #555555;
 }
 .sidebar-menu li:before {
-  font-family: 'FontAwesome';
+  font-family: 'Karla';
   content: '\f105';
   margin: 0 5px 0 -15px;
   color: #999999;
@@ -394,13 +396,13 @@ SIDEBAR + RIGHT COLUMN
 }
 .content-column-content {
   padding-left: 20px;
-  padding-right: 20px;
+  padding-right: 10px;
   padding-bottom: 20px;
 }
-@media (min-width: 1200px) {
+@media (min-width: 1800px) {
   .content-column-content {
     padding-left: 40px;
-    padding-right: 40px;
+    padding-right: 10px;
   }
 }
 .content-column-content p.lead {

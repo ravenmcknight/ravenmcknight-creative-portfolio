@@ -2,7 +2,7 @@
 
 
 @import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Comfortaa|Righteous');
-@import url('https://fonts.googleapis.com/css?family=Lato|Oswald');
+@import url('https://fonts.googleapis.com/css?family=Lato|Oswald|Karla');
 
 
 
@@ -13,14 +13,15 @@
 }
 
 .box-masonry-description p {
-	font-family: 'Lato'
+	font-family: 'Karla'
 }
 
 .sidebar-p {
-	font-family: 'Lato';
+	font-family: 'Karla';
 	font-size: 16px;
 	color: #606060;
 }
+
 
 .content-column-content h1 {
 	font-family: 'Oswald', cursive;
@@ -38,7 +39,7 @@
 }
 
 .content-column-content p {
-	font-family: 'Lato';
+	font-family: 'Karla';
 	color: #606060;
 }
 
@@ -47,4 +48,11 @@
 h4 a {
 	color: #8e8d8a;
 	font-family: 'Oswald', cursive
+	font-size: 24px;
+}
+
+.content-column-content {
+  padding-left: 20px;
+  padding-right: 10px;
+  padding-bottom: 20px;
 }

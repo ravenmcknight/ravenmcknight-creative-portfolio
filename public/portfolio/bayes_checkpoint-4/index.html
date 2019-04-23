@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="/css/owl.theme.css">
 
 
-  <link href="/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+  <link href="/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
 
  
 
@@ -136,8 +136,8 @@ bc_spatial &lt;- full_join(bc, counties, by =&quot;fips&quot;)   # join with cou
 <p>For this analysis, we’ll focus on the following predictors.</p>
 <table>
 <colgroup>
-<col width="18%" />
-<col width="81%" />
+<col width="23%" />
+<col width="76%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -264,7 +264,6 @@ ggplot(bc_na, aes(x=Region)) +
     facet_wrap(~ var, scales = &quot;free&quot;) +
     lims(y=c(0, 10000)) +   # cutting off a fair amount of data for clarity
     theme_minimal()</code></pre>
-<pre><code>## Warning: Removed 653 rows containing missing values (geom_point).</code></pre>
 <p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>We can also start to understand the characteristics of deserts with some numerical summaries:</p>
 <pre class="r"><code>deserts &lt;- bc %&gt;%
@@ -289,34 +288,57 @@ sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
 ##             83.50              0.73              0.18             82.32 
 ##      obamaPercent 
 ##              0.45</code></pre>
-</div>
-<div id="inital-model" class="section level3">
-<h3>Inital Model</h3>
+<p><br />
+### Initial Model</p>
 <p>We’ll start by implementing simple, non-spatial models. I think the most intutive predictor is region, so we’ll start my modeling <code>WomenPerClinic</code> by <code>Region</code>.</p>
 <p>Based on previous data exploration, I expect <code>WomenPerClinic</code> to be approximately normally distributed around a different mean for each region. There are five regions in our dataset: West, Midwest, Northeast, South, and Southwest, so I’ll create a beta prior for each of those.</p>
 <p>Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I’m giving each of the beta_i parameters vague priors. We can use the <code>RJAGS</code> package to simulate this model!</p>
 <pre class="r"><code>bc_na &lt;- bc_na %&gt;%
-  mutate(Region = as.factor(Region))
+  mutate(regionPred = as.numeric(as.factor(Region)))
 
-levels(bc_na$Region)</code></pre>
-<pre><code>## [1] &quot;Midwest&quot;   &quot;Northeast&quot; &quot;South&quot;     &quot;Southwest&quot; &quot;West&quot;</code></pre>
-<p>First, we’ll create some indicator variables for the five regions:</p>
-<pre class="r"><code>indicatorNortheast &lt;- rep(0, nrow(bc_na))
-indicatorSouth &lt;- rep(0, nrow(bc_na))
-indicatorSouthwest &lt;- rep(0, nrow(bc_na))
-indicatorWest &lt;- rep(0, nrow(bc_na))
-
-for(i in 1:nrow(bc_na)){
-  indicatorNortheast[i] &lt;- if_else(bc_na$Region[i]==&quot;Northeast&quot;, 1, 0)
-  indicatorSouth[i] &lt;- if_else(bc_na$Region[i] == &quot;South&quot;, 1, 0)
-  indicatorSouthwest[i] &lt;- if_else(bc_na$Region[i]==&quot;Southwest&quot;, 1,0)
-  indicatorWest[i] &lt;- if_else(bc_na$Region[i]==&quot;West&quot;, 1, 0)
-}</code></pre>
-<p>Then, simulate!</p>
+head(bc_na)</code></pre>
+<pre><code>## # A tibble: 6 x 32
+##      X1 County TotalClinics TotalWomen TotalWomenUnder… FedHC HealthDept
+##   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1     1 Autau…            2       2920              800     1          1
+## 2     2 Baldw…            6       9700             2690     4          2
+## 3     3 Barbo…            3       1780              410     1          2
+## 4     4 Bibb              5       1420              290     4          1
+## 5     5 Blount            2       3300              730     1          1
+## 6     6 Bullo…            1        800              190     0          1
+## # … with 25 more variables: HospHC &lt;dbl&gt;, PlannedParenthood &lt;dbl&gt;,
+## #   OtherHC &lt;dbl&gt;, State &lt;chr&gt;, polyname &lt;chr&gt;, fips &lt;dbl&gt;, GEO.id &lt;chr&gt;,
+## #   TotalPop &lt;dbl&gt;, NumRural &lt;dbl&gt;, MedianInc &lt;dbl&gt;, PercHSGrad &lt;dbl&gt;,
+## #   PercPoverty &lt;dbl&gt;, PercWhite &lt;dbl&gt;, PercBlack &lt;dbl&gt;, PercAmInd &lt;dbl&gt;,
+## #   PercAsian &lt;dbl&gt;, PercHawaii &lt;dbl&gt;, PercTwoOrMore &lt;dbl&gt;,
+## #   PercHisp &lt;dbl&gt;, PercRural &lt;dbl&gt;, WomenPerClinic &lt;dbl&gt;,
+## #   obamaPercent &lt;dbl&gt;, desert &lt;chr&gt;, Region &lt;chr&gt;, regionPred &lt;dbl&gt;</code></pre>
+<pre class="r"><code>bc_na</code></pre>
+<pre><code>## # A tibble: 2,482 x 32
+##       X1 County TotalClinics TotalWomen TotalWomenUnder… FedHC HealthDept
+##    &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+##  1     1 Autau…            2       2920              800     1          1
+##  2     2 Baldw…            6       9700             2690     4          2
+##  3     3 Barbo…            3       1780              410     1          2
+##  4     4 Bibb              5       1420              290     4          1
+##  5     5 Blount            2       3300              730     1          1
+##  6     6 Bullo…            1        800              190     0          1
+##  7     7 Butler            1       1510              330     0          1
+##  8     8 Calho…            3       8820             1880     2          1
+##  9     9 Chamb…            1       2200              570     0          1
+## 10    10 Chero…            2       1400              380     1          1
+## # … with 2,472 more rows, and 25 more variables: HospHC &lt;dbl&gt;,
+## #   PlannedParenthood &lt;dbl&gt;, OtherHC &lt;dbl&gt;, State &lt;chr&gt;, polyname &lt;chr&gt;,
+## #   fips &lt;dbl&gt;, GEO.id &lt;chr&gt;, TotalPop &lt;dbl&gt;, NumRural &lt;dbl&gt;,
+## #   MedianInc &lt;dbl&gt;, PercHSGrad &lt;dbl&gt;, PercPoverty &lt;dbl&gt;, PercWhite &lt;dbl&gt;,
+## #   PercBlack &lt;dbl&gt;, PercAmInd &lt;dbl&gt;, PercAsian &lt;dbl&gt;, PercHawaii &lt;dbl&gt;,
+## #   PercTwoOrMore &lt;dbl&gt;, PercHisp &lt;dbl&gt;, PercRural &lt;dbl&gt;,
+## #   WomenPerClinic &lt;dbl&gt;, obamaPercent &lt;dbl&gt;, desert &lt;chr&gt;, Region &lt;chr&gt;,
+## #   regionPred &lt;dbl&gt;</code></pre>
 <pre class="r"><code>cap_mod_2 &lt;- &quot;model{
   # Model for Y
   for(i in 1:length(y)){
-    y[i] ~ dnorm(beta0 + beta1[2]*indicatorNortheast[i] + beta1[3]*indicatorSouth[i] + beta1[4]*indicatorSouthwest[i]+ beta1[5]*indicatorWest[i], tau)
+    y[i] ~ dnorm(beta0 + beta1[x[i]], tau)
   }
   
   beta0 ~ dnorm(0, 1/1000)
@@ -331,7 +353,7 @@ for(i in 1:nrow(bc_na)){
 }&quot;    
 
 cap_jags_2 &lt;- jags.model(textConnection(cap_mod_2),
-                         data=list(y=bc_na$WomenPerClinic, indicatorWest=indicatorWest, indicatorNortheast=indicatorNortheast, indicatorSouth=indicatorSouth, indicatorSouthwest=indicatorSouthwest),
+                         data=list(y=bc_na$WomenPerClinic, x=bc_na$regionPred),
                          inits = list(.RNG.name =&quot;base::Wichmann-Hill&quot;, .RNG.seed = 454))</code></pre>
 <pre><code>## Compiling model graph
 ##    Resolving undeclared variables
@@ -339,18 +361,17 @@ cap_jags_2 &lt;- jags.model(textConnection(cap_mod_2),
 ## Graph information:
 ##    Observed stochastic nodes: 2482
 ##    Unobserved stochastic nodes: 7
-##    Total graph size: 12436
+##    Total graph size: 4982
 ## 
 ## Initializing model</code></pre>
 <pre class="r"><code>cap_sim_2 &lt;- coda.samples(cap_jags_2, 
                           variable.names=c(&quot;beta0&quot;, &quot;beta1[2]&quot;, &quot;beta1[3]&quot;, &quot;beta1[3]&quot;, &quot;beta1[4]&quot;, &quot;beta1[5]&quot;, &quot;tau&quot;, &quot;taub&quot;),
-                          n.iter=10000)</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): Failed to set trace monitor for beta1[3]
-## Monitor already exists and cannot be duplicated</code></pre>
-<pre class="r"><code>cap_chains_2 &lt;- data.frame(iteration = 1:10000, cap_sim_2[[1]])</code></pre>
+                          n.iter=10000)
+
+cap_chains_2 &lt;- data.frame(iteration = 1:10000, cap_sim_2[[1]])</code></pre>
 <p>Let’s check out our simulation:</p>
 <pre class="r"><code>plot(cap_sim_2)</code></pre>
-<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-16-1.png" width="672" /><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-15-1.png" width="672" /><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
 <p>As we can see from the trace plots, my priors were way off to start. However, they stabilized very quickly! We can also check out the coefficient estimates below.</p>
 <pre class="r"><code>summary(cap_sim_2)</code></pre>
 <pre><code>## 

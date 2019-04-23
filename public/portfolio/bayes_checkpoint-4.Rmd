@@ -40,21 +40,21 @@ bc_spatial <- full_join(bc, counties, by ="fips")   # join with county data from
 
 For this analysis, we'll focus on the following predictors. 
 
-| **variable**              | **meaning**                                                                                                               |
-|---------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| TotalClinics              | Number of publicly funded clinics providing birth control services by county, Guttmacher                                  |
-| TotalWomen                | Total women age 13-44 who can become pregnant but don't want to *and* who need publicly funded contraceptives, Guttmacher |
-| TotalWomenUnder20         | Total women under 20 who need publicly funded services, Guttmacher                                                        |
-| TotalPop                  | Total county population, ACS 2015                                                                                         |
-| MedianInc                 | Median county income, ACS 2015                                                                                            |
-| PercHSGrad                | Percent of county with high school diploma or equivalent, ACS 2015                                                        |
-| PercPoverty               | Percent of county living below poverty line, ACS 2015                                                                     |
-| PercWhite, PercBlack .... | Seven variables recording racial demographics of each county, ACS 2015                                                    |
-| PercRural                 | Percent of population living in rural area, ACS 2015                                                                      |
-| Region                    | Categorical variable recording US region for each state                                                                   |
-| ObamaPercent              | Percent of the 2012 vote Obama got by *state*                                                                             |
-| WomenPerClinic            | Simple ratio of TotalWomen/TotalClinics                                                                                   |
-| Desert                    | Simple yes/no categorical variable, is the county a desert?                                                               |
+| **variable**                        | **meaning**                                                                                                               |
+|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| TotalClinics                        | Number of publicly funded clinics providing birth control services by county, Guttmacher                                  |
+| TotalWomen                          | Total women age 13-44 who can become pregnant but don't want to *and* who need publicly funded contraceptives, Guttmacher |
+| TotalWomenUnder20                   | Total women under 20 who need publicly funded services, Guttmacher                                                        |
+| TotalPop                            | Total county population, ACS 2015                                                                                         |
+| MedianInc                           | Median county income, ACS 2015                                                                                            |
+| PercHSGrad                          | Percent of county with high school diploma or equivalent, ACS 2015                                                        |
+| PercPoverty                         | Percent of county living below poverty line, ACS 2015                                                                     |
+| PercWhite, PercBlack ....           | Seven variables recording racial demographics of each county, ACS 2015                                                    |
+| PercRural                           | Percent of population living in rural area, ACS 2015                                                                      |
+| Region                              | Categorical variable recording US region for each state                                                                   |
+| ObamaPercent                        | Percent of the 2012 vote Obama got by *state*                                                                             |
+| WomenPerClinic                      | Simple ratio of TotalWomen/TotalClinics                                                                                   |
+| Desert                              | Simple yes/no categorical variable, is the county a desert?                                                               |
 
 
 
@@ -132,7 +132,7 @@ ggplot(bc_na, aes(x=as.numeric(TotalPop))) +
 
 
 Before we build models, we can check how our outcome (desert or women per clinic) compares to our key predictors. For the sake of visualization, I'll plot women per clinic here. 
-```{r}
+```{r warning=FALSE, message=FALSE}
 predictors %>%
   gather(-WomenPerClinic, -TotalWomen, -TotalPop, -TotalWomenUnder20, key = "var", value = "value") %>%
   ggplot(aes(x = value, y = WomenPerClinic)) +
@@ -161,7 +161,9 @@ not_deserts <- bc %>%
 sapply(not_deserts, mean, na.rm=TRUE)
 ```
 
-### Inital Model
+\
+
+### Initial Model
 
 We'll start by implementing simple, non-spatial models. I think the most intutive predictor is region, so we'll start my modeling `WomenPerClinic` by `Region`. 
 
@@ -169,35 +171,21 @@ Based on previous data exploration, I expect `WomenPerClinic` to be approximatel
 
 
 Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I'm giving each of the beta_i parameters vague priors. We can use the `RJAGS` package to simulate this model!
-
 ```{r}
 bc_na <- bc_na %>%
-  mutate(Region = as.factor(Region))
+  mutate(regionPred = as.numeric(as.factor(Region)))
 
-levels(bc_na$Region)
+head(bc_na)
+
+bc_na
 ```
 
-First, we'll create some indicator variables for the five regions:
-```{r}
-indicatorNortheast <- rep(0, nrow(bc_na))
-indicatorSouth <- rep(0, nrow(bc_na))
-indicatorSouthwest <- rep(0, nrow(bc_na))
-indicatorWest <- rep(0, nrow(bc_na))
 
-for(i in 1:nrow(bc_na)){
-  indicatorNortheast[i] <- if_else(bc_na$Region[i]=="Northeast", 1, 0)
-  indicatorSouth[i] <- if_else(bc_na$Region[i] == "South", 1, 0)
-  indicatorSouthwest[i] <- if_else(bc_na$Region[i]=="Southwest", 1,0)
-  indicatorWest[i] <- if_else(bc_na$Region[i]=="West", 1, 0)
-}
-```
-
-Then, simulate!
-```{r}
+```{r warning=FALSE, message=FALSE}
 cap_mod_2 <- "model{
   # Model for Y
   for(i in 1:length(y)){
-    y[i] ~ dnorm(beta0 + beta1[2]*indicatorNortheast[i] + beta1[3]*indicatorSouth[i] + beta1[4]*indicatorSouthwest[i]+ beta1[5]*indicatorWest[i], tau)
+    y[i] ~ dnorm(beta0 + beta1[x[i]], tau)
   }
   
   beta0 ~ dnorm(0, 1/1000)
@@ -212,7 +200,7 @@ cap_mod_2 <- "model{
 }"    
 
 cap_jags_2 <- jags.model(textConnection(cap_mod_2),
-                         data=list(y=bc_na$WomenPerClinic, indicatorWest=indicatorWest, indicatorNortheast=indicatorNortheast, indicatorSouth=indicatorSouth, indicatorSouthwest=indicatorSouthwest),
+                         data=list(y=bc_na$WomenPerClinic, x=bc_na$regionPred),
                          inits = list(.RNG.name ="base::Wichmann-Hill", .RNG.seed = 454))
 
 cap_sim_2 <- coda.samples(cap_jags_2, 
@@ -237,3 +225,5 @@ summary(cap_sim_2)
 These coefficients confirm some intuition! We see that the Midwest has a deceptively low intercept because of missing data. The Northeast has the highest coefficient, which makes sense because in general, counties in the Northeast have the highest population. The South and Southwest have similarly high coefficients because of high populations and, if I had to guess, general political climate. The West has a slightly lower coefficient, likely because so much of the West is rural and/or progressive. 
 
 This model starts to describe our data. However, we can do better! Moving forward, we will implement spatial conditional autogregressive models to better understand the spatial and hierarchical aspects of the data. 
+
+
