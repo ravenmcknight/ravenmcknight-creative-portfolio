@@ -171,17 +171,12 @@ Based on previous data exploration, I expect `WomenPerClinic` to be approximatel
 
 
 Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I'm giving each of the beta_i parameters vague priors. We can use the `RJAGS` package to simulate this model!
-```{r}
-bc_na <- bc_na %>%
-  mutate(regionPred = as.numeric(as.factor(Region)))
-
-head(bc_na)
-
-bc_na
-```
 
 
 ```{r warning=FALSE, message=FALSE}
+bc_na <- bc_na %>%
+  mutate(regionPred = as.numeric(as.factor(Region)))
+
 cap_mod_2 <- "model{
   # Model for Y
   for(i in 1:length(y)){

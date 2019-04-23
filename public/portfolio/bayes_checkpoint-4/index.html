@@ -296,46 +296,7 @@ sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
 <pre class="r"><code>bc_na &lt;- bc_na %&gt;%
   mutate(regionPred = as.numeric(as.factor(Region)))
 
-head(bc_na)</code></pre>
-<pre><code>## # A tibble: 6 x 32
-##      X1 County TotalClinics TotalWomen TotalWomenUnder… FedHC HealthDept
-##   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-## 1     1 Autau…            2       2920              800     1          1
-## 2     2 Baldw…            6       9700             2690     4          2
-## 3     3 Barbo…            3       1780              410     1          2
-## 4     4 Bibb              5       1420              290     4          1
-## 5     5 Blount            2       3300              730     1          1
-## 6     6 Bullo…            1        800              190     0          1
-## # … with 25 more variables: HospHC &lt;dbl&gt;, PlannedParenthood &lt;dbl&gt;,
-## #   OtherHC &lt;dbl&gt;, State &lt;chr&gt;, polyname &lt;chr&gt;, fips &lt;dbl&gt;, GEO.id &lt;chr&gt;,
-## #   TotalPop &lt;dbl&gt;, NumRural &lt;dbl&gt;, MedianInc &lt;dbl&gt;, PercHSGrad &lt;dbl&gt;,
-## #   PercPoverty &lt;dbl&gt;, PercWhite &lt;dbl&gt;, PercBlack &lt;dbl&gt;, PercAmInd &lt;dbl&gt;,
-## #   PercAsian &lt;dbl&gt;, PercHawaii &lt;dbl&gt;, PercTwoOrMore &lt;dbl&gt;,
-## #   PercHisp &lt;dbl&gt;, PercRural &lt;dbl&gt;, WomenPerClinic &lt;dbl&gt;,
-## #   obamaPercent &lt;dbl&gt;, desert &lt;chr&gt;, Region &lt;chr&gt;, regionPred &lt;dbl&gt;</code></pre>
-<pre class="r"><code>bc_na</code></pre>
-<pre><code>## # A tibble: 2,482 x 32
-##       X1 County TotalClinics TotalWomen TotalWomenUnder… FedHC HealthDept
-##    &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-##  1     1 Autau…            2       2920              800     1          1
-##  2     2 Baldw…            6       9700             2690     4          2
-##  3     3 Barbo…            3       1780              410     1          2
-##  4     4 Bibb              5       1420              290     4          1
-##  5     5 Blount            2       3300              730     1          1
-##  6     6 Bullo…            1        800              190     0          1
-##  7     7 Butler            1       1510              330     0          1
-##  8     8 Calho…            3       8820             1880     2          1
-##  9     9 Chamb…            1       2200              570     0          1
-## 10    10 Chero…            2       1400              380     1          1
-## # … with 2,472 more rows, and 25 more variables: HospHC &lt;dbl&gt;,
-## #   PlannedParenthood &lt;dbl&gt;, OtherHC &lt;dbl&gt;, State &lt;chr&gt;, polyname &lt;chr&gt;,
-## #   fips &lt;dbl&gt;, GEO.id &lt;chr&gt;, TotalPop &lt;dbl&gt;, NumRural &lt;dbl&gt;,
-## #   MedianInc &lt;dbl&gt;, PercHSGrad &lt;dbl&gt;, PercPoverty &lt;dbl&gt;, PercWhite &lt;dbl&gt;,
-## #   PercBlack &lt;dbl&gt;, PercAmInd &lt;dbl&gt;, PercAsian &lt;dbl&gt;, PercHawaii &lt;dbl&gt;,
-## #   PercTwoOrMore &lt;dbl&gt;, PercHisp &lt;dbl&gt;, PercRural &lt;dbl&gt;,
-## #   WomenPerClinic &lt;dbl&gt;, obamaPercent &lt;dbl&gt;, desert &lt;chr&gt;, Region &lt;chr&gt;,
-## #   regionPred &lt;dbl&gt;</code></pre>
-<pre class="r"><code>cap_mod_2 &lt;- &quot;model{
+cap_mod_2 &lt;- &quot;model{
   # Model for Y
   for(i in 1:length(y)){
     y[i] ~ dnorm(beta0 + beta1[x[i]], tau)
@@ -371,7 +332,7 @@ cap_jags_2 &lt;- jags.model(textConnection(cap_mod_2),
 cap_chains_2 &lt;- data.frame(iteration = 1:10000, cap_sim_2[[1]])</code></pre>
 <p>Let’s check out our simulation:</p>
 <pre class="r"><code>plot(cap_sim_2)</code></pre>
-<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-15-1.png" width="672" /><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<p><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-14-1.png" width="672" /><img src="/portfolio/bayes_checkpoint-4_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
 <p>As we can see from the trace plots, my priors were way off to start. However, they stabilized very quickly! We can also check out the coefficient estimates below.</p>
 <pre class="r"><code>summary(cap_sim_2)</code></pre>
 <pre><code>## 
