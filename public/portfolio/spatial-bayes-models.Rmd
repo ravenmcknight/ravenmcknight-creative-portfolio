@@ -1,0 +1,77 @@
+---
+title: "Spatial Bayesian Models"
+author: "Raven McKnight"
+date: "4/24/2019"
+draft: true
+showonlyimage: false
+image: "img/portfolio/bayes_checkpoint.png"
+weight: 1
+output: 
+  blogdown::html_page
+---
+```{r include = FALSE}
+library(ggplot2)
+library(urbnmapr)
+library(wesanderson)
+library(tidyverse)
+
+bc <- read_csv("/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv")
+
+counties <- urbnmapr::counties %>%
+  mutate(fips = as.numeric(county_fips))  # create field to join on
+
+bc_spatial <- full_join(bc, counties, by ="fips")   # join with county data from urbnmapr
+
+bc_na <- bc %>%
+  filter(!is.na(desert))
+
+bc_spatial_na <- bc_spatial %>%
+  filter(!is.na(desert))   # remove NAs for mapping
+```
+
+
+Building on the work in [last week's post](https://www.ravenmcknight.com/portfolio/spatial-bayes-intro/), we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit *conditional autoregressive* models which will better address the spatial autocorrelation in our data.
+
+### Conditional Autoregressive Models
+Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods--Bayesian and frequentist!-- aren't useful in modelling spatial data. Enter CARBayes!
+
+Conditional autoregressive, or CAR, models account for the spatial correlation in our data, making our analyses more complete and informed. CAR models can be fit in frequentist contexts, though spatial correlation is often dealt with by spatially autocorreleted random effects in Bayesian hierarchical models. 
+
+For this project, we'll use the R package CARBayes. CARBayes has a lot of built-in functionality that allows us to start modelling without diving too deep into the theory (more on the details of CARBayes in our Correlated Data tutorial!). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) is a great resource with plenty of information and examples to get started!
+
+### Which Model do we fit?
+
+To understand *who lives with limited access to birth control*, we want to locate concentrated areas of poor access. Once we've identified those areas, we can summarize who lives there and potentially move on to more sophisticated models. 
+
+With this in mind, our first task is *clustering*. If we look at my home state, North Carolina, we can see that there do appear to be significant clusters of deserts/not deserts. 
+```{r}
+nc <- bc_spatial_na %>% filter(State=="NorthCarolina")
+ggplot() +
+  geom_polygon(data = nc, mapping = aes(x = long, y = lat, group = group, fill = nc$desert), color = "NA") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
+  labs(x="", y="") +
+  guides(fill=guide_legend(title="Desert")) + 
+  theme_minimal()
+```
+
+We can also see that clustering seems to occur across the entirety of the South--this means that our previous model, which only took `Region` into acccount, was insufficient to describe the spatial variaton.  
+```{r}
+south <- bc_spatial_na %>% filter(Region=="South")
+ggplot() +
+  geom_polygon(data = south, mapping = aes(x = long, y = lat, group = group, fill = south$desert), color = "NA") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
+  labs(x="", y="") +
+  guides(fill=guide_legend(title="Desert")) + 
+  theme_minimal()
+```
+
+ Luckily for us, CARBayes has a built-in ability to model spatial clusters following the work of Lee and Mitchell (2012). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) has an informative toy example for this method starting on page 21. 
+ 
+ For the purpose of clustering, Lee and Mitchell's model doesn't take any predictors. Instead, it locates boundaries between clusters of high disease risk or, in our case, limited birth control access. 
+
+
+
+### Progress since last week
+This was definitely a minimal progress week! Since last week, I reread the CARBayes vignette, chose which model to fit, worked on implementing that model, and wrote this post. I did some slight touch-ups on checkpoint 4 but nothing major!

@@ -117,8 +117,8 @@ if (!doNotTrack) {
 
 <p>Birth control is a critical aspect of basic health care. Accessible contraceptive services have numerous tangible benefits from reducing teen pregnancy to lowering abortion rates. At the most basic level, birth control empowers women to navigate the world and their health more freely. The “pro-life” movement and current political climate put this vital resource at risk. With this in mind, I decided to study access to birth control in the United States.</p>
 <p>This project was initially inspired by a map by <a href="https://powertodecide.org/what-we-do/access/access-birth-control">Power to Decide</a>. Based on the work of Richard Cooper, MD, this organization defines a <em>contraceptive desert</em> as a region where there are fewer than one birth control provider per 1000 women in need. This map (and my project) focus on publicly funded services and the women who need them.</p>
-<p>Admittedly, access is more nuanced than the simple presence of clinics. There are many other factors to consider: physical accessibility (proximity to transit lines, etc), stigma, undereducation regarding contraception, or any other number of personal characteristics. I’m considering this simple ratio of women per clinic as a first step in studying birth control accessibility.</p>
-<p>For this project, I use county-level data about women in need of services and service providers collected by the Guttmacher Institute from 2014-2015. My deomgraphic data is drawn from 2015 ACS 5-year estimates and my county boundaries from the Urban Institue.</p>
+<p>Admittedly, access is more nuanced than the simple presence of clinics. There are many other factors to consider: physical accessibility (proximity to transit lines, etc), stigma, under-education regarding contraception, or any other number of personal characteristics. I’m considering this simple ratio of women per clinic as a first step in studying birth control accessibility.</p>
+<p>For this project, I use county-level data about women in need of services and service providers collected by the Guttmacher Institute from 2014-2015. My demographic data is drawn from 2015 ACS 5-year estimates and my county boundaries from the Urban Institute.</p>
 <div id="the-data" class="section level3">
 <h3>The Data</h3>
 <p>First, let’s load the packages we’ll need.</p>
@@ -126,7 +126,7 @@ if (!doNotTrack) {
 library(wesanderson)
 library(rjags)
 library(tidyverse)</code></pre>
-<p>Now, we can load the data: <code>bc</code> is a dataframe of cleaned ACS and Guttmacher data. <code>bc_spatial</code> is the same data joined to county boundaries from the Urban Institute!</p>
+<p>Now, we can load the data: <code>bc</code> is a data frame of cleaned ACS and Guttmacher data. <code>bc_spatial</code> is the same data joined to county boundaries from the Urban Institute!</p>
 <pre class="r"><code>bc &lt;- read_csv(&quot;/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv&quot;)
 
 counties &lt;- urbnmapr::counties %&gt;%
@@ -290,8 +290,8 @@ sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
 ##              0.45</code></pre>
 <p><br />
 ### Initial Model</p>
-<p>We’ll start by implementing simple, non-spatial models. I think the most intutive predictor is region, so we’ll start my modeling <code>WomenPerClinic</code> by <code>Region</code>.</p>
-<p>Based on previous data exploration, I expect <code>WomenPerClinic</code> to be approximately normally distributed around a different mean for each region. There are five regions in our dataset: West, Midwest, Northeast, South, and Southwest, so I’ll create a beta prior for each of those.</p>
+<p>We’ll start by implementing simple, non-spatial models. I think the most intuitive predictor is region, so we’ll start my modeling <code>WomenPerClinic</code> by <code>Region</code>.</p>
+<p>Based on previous data exploration, I expect <code>WomenPerClinic</code> to be approximately normally distributed around a different mean for each region. There are five regions in our data set: West, Midwest, Northeast, South, and Southwest, so I’ll create a beta prior for each of those.</p>
 <p>Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I’m giving each of the beta_i parameters vague priors. We can use the <code>RJAGS</code> package to simulate this model!</p>
 <pre class="r"><code>bc_na &lt;- bc_na %&gt;%
   mutate(regionPred = as.numeric(as.factor(Region)))

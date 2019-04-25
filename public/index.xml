@@ -11,11 +11,21 @@
     
     
     <item>
-      <title>Spatial Bayes Introduction</title>
-      <link>/portfolio/bayes_checkpoint-4/</link>
+      <title>Spatial Bayesian Models</title>
+      <link>/portfolio/spatial-bayes-models/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/portfolio/bayes_checkpoint-4/</guid>
+      <guid>/portfolio/spatial-bayes-models/</guid>
+      <description>Building on the work in last week’s post, we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit conditional autoregressive models which will better address the spatial autocorrelation in our data.
+Conditional Autoregressive Models Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods–Bayesian and frequentist!</description>
+    </item>
+    
+    <item>
+      <title>Spatial Bayes Introduction</title>
+      <link>/portfolio/spatial-bayes-intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/portfolio/spatial-bayes-intro/</guid>
       <description>Birth control is a critical aspect of basic health care. Accessible contraceptive services have numerous tangible benefits from reducing teen pregnancy to lowering abortion rates. At the most basic level, birth control empowers women to navigate the world and their health more freely. The “pro-life” movement and current political climate put this vital resource at risk. With this in mind, I decided to study access to birth control in the United States.</description>
     </item>
     

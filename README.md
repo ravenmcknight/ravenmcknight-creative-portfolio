@@ -1,2 +1,2 @@
 # ravenmcknight
-public folder for personal site
+public files for personal site

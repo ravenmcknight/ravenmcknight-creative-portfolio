@@ -50,6 +50,12 @@ section.background-secondary {
 .section-inverse .heading:after {
   background: #fff;
 }
+
+.MathJax {
+  color: black;
+  background-color: white;
+}
+
 .italic {
   font-style: italic;
   font-family: "Georgia", "Times New Roman", Times, serif;
@@ -651,6 +657,8 @@ p.social.social--big i {
 COPYRIGHT
 =====================
 */
+
+
 .copyright {
   color: #999999;
   font-size: 13px;
