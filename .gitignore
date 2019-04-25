@@ -10,3 +10,4 @@ themes/
 .netlify/
 index.Rmd
 ravenmcknight.Rproj
+node_modules/
