@@ -125,17 +125,18 @@ if (!doNotTrack) {
 <div id="which-model-do-we-fit" class="section level3">
 <h3>Which Model do we fit?</h3>
 <p>To understand <em>who lives with limited access to birth control</em>, we want to locate concentrated areas of poor access. Once we’ve identified those areas, we can summarize who lives there and potentially move on to more sophisticated models.</p>
-<p>With this in mind, our first task is <em>clustering</em>. If we look at my home state, North Carolina, we can see that there do appear to be significant clusters of deserts/not deserts.</p>
-<pre class="r"><code>nc &lt;- bc_spatial_na %&gt;% filter(State==&quot;NorthCarolina&quot;)
+<p>With this in mind, our first task is <em>clustering</em>. My family recently moved to Tennessee; if we zoom in on this state, we can see that there are clear clusters of deserts/not deserts.</p>
+<pre class="r"><code>tn &lt;- bc_spatial_na %&gt;% filter(State==&quot;Tennessee&quot;)
+
 ggplot() +
-  geom_polygon(data = nc, mapping = aes(x = long, y = lat, group = group, fill = nc$desert), color = &quot;NA&quot;) +
+  geom_polygon(data = tn, mapping = aes(x = long, y = lat, group = group, fill = tn$desert), color = &quot;NA&quot;) +
   coord_map(projection = &quot;albers&quot;, lat0 = 39, lat1 = 45) +
   scale_fill_manual(values=wes_palette(n=3, name=&quot;GrandBudapest2&quot;)) +
   labs(x=&quot;&quot;, y=&quot;&quot;) +
   guides(fill=guide_legend(title=&quot;Desert&quot;)) + 
   theme_minimal()</code></pre>
 <p><img src="/portfolio/spatial-bayes-models_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<p>We can also see that clustering seems to occur across the entirety of the South–this means that our previous model, which only took <code>Region</code> into acccount, was insufficient to describe the spatial variaton.</p>
+<p>We can also see that clustering seems to occur across the entirety of the South–this means that our previous model, which only took <code>Region</code> into account, was insufficient to describe the spatial variation.</p>
 <pre class="r"><code>south &lt;- bc_spatial_na %&gt;% filter(Region==&quot;South&quot;)
 ggplot() +
   geom_polygon(data = south, mapping = aes(x = long, y = lat, group = group, fill = south$desert), color = &quot;NA&quot;) +
@@ -146,7 +147,7 @@ ggplot() +
   theme_minimal()</code></pre>
 <p><img src="/portfolio/spatial-bayes-models_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>Luckily for us, CARBayes has a built-in ability to model spatial clusters following the work of Lee and Mitchell (2012). The <a href="https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf">vignette</a> has an informative toy example for this method starting on page 21.</p>
-<p>For the purpose of clustering, Lee and Mitchell’s model doesn’t take any predictors. Instead, it locates boundaries between clusters of high disease risk or, in our case, limited birth control access.</p>
+<p>For the purpose of clustering, Lee and Mitchell’s model doesn’t take any predictors. Instead, it locates boundaries between clusters of high disease risk or, in our case, limited birth control access. In the next section, we’ll fit a model using this method via the <code>S.CARdissimilarity()</code> function in CARBayes.</p>
 </div>
 <div id="progress-since-last-week" class="section level3">
 <h3>Progress since last week</h3>

@@ -3,8 +3,6 @@ title: "Spatial Bayesian Models"
 author: "Raven McKnight"
 date: "4/24/2019"
 draft: true
-showonlyimage: false
-image: "img/portfolio/bayes_checkpoint.png"
 weight: 1
 output: 
   blogdown::html_page
@@ -31,7 +29,7 @@ bc_spatial_na <- bc_spatial %>%
 
 
 Building on the work in [last week's post](https://www.ravenmcknight.com/portfolio/spatial-bayes-intro/), we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit *conditional autoregressive* models which will better address the spatial autocorrelation in our data.
-
+  
 ### Conditional Autoregressive Models
 Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods--Bayesian and frequentist!-- aren't useful in modelling spatial data. Enter CARBayes!
 
@@ -43,11 +41,12 @@ For this project, we'll use the R package CARBayes. CARBayes has a lot of built-
 
 To understand *who lives with limited access to birth control*, we want to locate concentrated areas of poor access. Once we've identified those areas, we can summarize who lives there and potentially move on to more sophisticated models. 
 
-With this in mind, our first task is *clustering*. If we look at my home state, North Carolina, we can see that there do appear to be significant clusters of deserts/not deserts. 
+With this in mind, our first task is *clustering*. My family recently moved to Tennessee; if we zoom in on this state, we can see that there are clear clusters of deserts/not deserts. 
 ```{r}
-nc <- bc_spatial_na %>% filter(State=="NorthCarolina")
+tn <- bc_spatial_na %>% filter(State=="Tennessee")
+
 ggplot() +
-  geom_polygon(data = nc, mapping = aes(x = long, y = lat, group = group, fill = nc$desert), color = "NA") +
+  geom_polygon(data = tn, mapping = aes(x = long, y = lat, group = group, fill = tn$desert), color = "NA") +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
   labs(x="", y="") +
@@ -55,7 +54,7 @@ ggplot() +
   theme_minimal()
 ```
 
-We can also see that clustering seems to occur across the entirety of the South--this means that our previous model, which only took `Region` into acccount, was insufficient to describe the spatial variaton.  
+We can also see that clustering seems to occur across the entirety of the South--this means that our previous model, which only took `Region` into account, was insufficient to describe the spatial variation.  
 ```{r}
 south <- bc_spatial_na %>% filter(Region=="South")
 ggplot() +
@@ -67,11 +66,21 @@ ggplot() +
   theme_minimal()
 ```
 
- Luckily for us, CARBayes has a built-in ability to model spatial clusters following the work of Lee and Mitchell (2012). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) has an informative toy example for this method starting on page 21. 
+Luckily for us, CARBayes has a built-in ability to model spatial clusters following the work of Lee and Mitchell (2012). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) has an informative toy example for this method starting on page 21. 
  
- For the purpose of clustering, Lee and Mitchell's model doesn't take any predictors. Instead, it locates boundaries between clusters of high disease risk or, in our case, limited birth control access. 
+For the purpose of clustering, Lee and Mitchell's model doesn't take any predictors. Instead, it locates boundaries between clusters of high disease risk or, in our case, limited birth control access. In the next section, we'll fit a model using this method via the `S.CARdissimilarity()` function in CARBayes. 
 
 
 
 ### Progress since last week
 This was definitely a minimal progress week! Since last week, I reread the CARBayes vignette, chose which model to fit, worked on implementing that model, and wrote this post. I did some slight touch-ups on checkpoint 4 but nothing major!
+
+```{r include=FALSE}
+# add credits
+# figure out mathJax
+# fit model
+# can we map the boundaries over Tennessee to see how well we did?
+# summarize clusters
+# theorize why the clusters exist in TN
+```
+
