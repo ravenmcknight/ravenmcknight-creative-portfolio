@@ -201,8 +201,9 @@ bc_spatial &lt;- full_join(bc, counties, by =&quot;fips&quot;)   # join with cou
 </tr>
 </tbody>
 </table>
-<p><br />
-### Visualization and Exploration</p>
+</div>
+<div id="visualization-and-exploration" class="section level3">
+<h3>Visualization and Exploration</h3>
 <p>A natural first visualization is to check where contraceptive deserts in the United States are. We can map the simple yes/no <code>desert</code> variable to get a sense of where there’s less than one clinic per 1000 women in need.</p>
 <pre class="r"><code>bc_spatial_na &lt;- bc_spatial %&gt;%
   filter(!is.na(desert))   # remove NAs for mapping
@@ -210,7 +211,7 @@ bc_spatial &lt;- full_join(bc, counties, by =&quot;fips&quot;)   # join with cou
 ggplot() +
   geom_polygon(data = bc_spatial_na, mapping = aes(x = long, y = lat, group = group, fill = bc_spatial_na$desert), color = &quot;NA&quot;) +
   coord_map(projection = &quot;albers&quot;, lat0 = 39, lat1 = 45) +
-  scale_fill_manual(values=wes_palette(n=3, name=&quot;GrandBudapest2&quot;)) +
+  scale_fill_manual(values=wes_palette(&quot;GrandBudapest1&quot;)) +
   labs(x=&quot;&quot;, y=&quot;&quot;) +
   guides(fill=guide_legend(title=&quot;Desert&quot;)) + 
   theme_minimal()</code></pre>
@@ -244,26 +245,26 @@ sapply(no_missing_data, mean, na.rm=TRUE)</code></pre>
 
 ggplot(bc_na, aes(x=Region)) +
   geom_bar(aes(fill=desert)) +
-  scale_fill_manual(values=wes_palette(n=3, name=&quot;GrandBudapest2&quot;)) +
+  scale_fill_manual(values=wes_palette(n=3, name=&quot;GrandBudapest1&quot;)) +
   theme_minimal()</code></pre>
 <p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>One major limitation of this study is that any county with fewer than 1000 women in need cannot be defined as a desert, even if there are 0 clinics reported!</p>
 <pre class="r"><code>ggplot(bc_na, aes(x=as.numeric(TotalPop))) +
-  geom_histogram(fill=&quot;#E6A0C4&quot;) +
+  geom_histogram(fill=&quot;#F1BB7B&quot;) +
   facet_wrap(~desert, scales=&quot;free&quot;) +
   lims(x= c(0, 200000)) +
   labs(x=&quot;Total Population&quot;, y=&quot;Count&quot;) +
   theme_minimal()</code></pre>
-<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>Before we build models, we can check how our outcome (desert or women per clinic) compares to our key predictors. For the sake of visualization, I’ll plot women per clinic here.</p>
 <pre class="r"><code>predictors %&gt;%
   gather(-WomenPerClinic, -TotalWomen, -TotalPop, -TotalWomenUnder20, key = &quot;var&quot;, value = &quot;value&quot;) %&gt;%
   ggplot(aes(x = value, y = WomenPerClinic)) +
-    geom_point(color=&quot;#C6CDF7&quot;) +
+    geom_point(color=&quot;#FD6467&quot;) +
     facet_wrap(~ var, scales = &quot;free&quot;) +
     lims(y=c(0, 10000)) +   # cutting off a fair amount of data for clarity
     theme_minimal()</code></pre>
-<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>We can also start to understand the characteristics of deserts with some numerical summaries:</p>
 <pre class="r"><code>deserts &lt;- bc %&gt;%
   filter(desert==&quot;Yes&quot;) %&gt;%
@@ -287,15 +288,16 @@ sapply(not_deserts, mean, na.rm=TRUE)</code></pre>
 ##             83.50              0.73              0.18             82.32 
 ##      obamaPercent 
 ##              0.45</code></pre>
-<p><br />
-### Initial Model</p>
+</div>
+<div id="initial-model" class="section level3">
+<h3>Initial Model</h3>
 <p>We’ll start by implementing simple, non-spatial models. I think the most intuitive predictor is region, so we’ll start my modeling <code>WomenPerClinic</code> by <code>Region</code>. We can also checkout the plot below to confirm that the distributions are different in each region.</p>
 <pre class="r"><code>ggplot(bc_na %&gt;% filter(WomenPerClinic &lt; 5000), aes(x=WomenPerClinic)) + 
-  geom_density(color=&quot;#E6A0C4&quot;) +
+  geom_density(color=&quot;#FD6467&quot;) +
   facet_wrap(~Region) +
   labs(x=&quot;Women per Clinic&quot;, y=&quot;Density&quot;) +
   theme_minimal()</code></pre>
-<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>Based on previous data exploration, I expect <code>WomenPerClinic</code> to be approximately normally distributed around a different mean for each region. There are five regions in our data set: West, Midwest, Northeast, South, and Southwest, so I’ll create a beta prior for each of those.</p>
 <p>Here, X2 indicates whether county i is in the Northeast, X3 indicates South, X4 indicates Southwest, and X5 the Southwest. The reference level is the Midwest. I’m giving each of the beta_i parameters vague priors. We can use the <code>RJAGS</code> package to simulate this model!</p>
 <pre class="r"><code>bc_na &lt;- bc_na %&gt;%
@@ -337,7 +339,7 @@ cap_jags_2 &lt;- jags.model(textConnection(cap_mod_2),
 cap_chains_2 &lt;- data.frame(iteration = 1:10000, cap_sim_2[[1]])</code></pre>
 <p>Let’s check out our simulation:</p>
 <pre class="r"><code>MCMCtrace(object = cap_sim_2, pdf = FALSE, type = &quot;trace&quot;, ISB = FALSE, iter=10000)</code></pre>
-<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-15-1.png" width="672" /><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<p><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-16-1.png" width="672" /><img src="/portfolio/spatial-bayes-intro_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
 <p>As we can see from the trace plots, my priors were way off to start. Luckily, I provided vague enough priors that the trace plots stabilize very quickly! We can also check out the coefficient estimates below.</p>
 <pre class="r"><code>summary(cap_sim_2)</code></pre>
 <pre><code>## 

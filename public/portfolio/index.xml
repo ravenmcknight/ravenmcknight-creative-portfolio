@@ -11,13 +11,23 @@
     
     
     <item>
-      <title>Spatial Bayesian Models</title>
+      <title>A First Spatial Bayesian Model</title>
+      <link>/portfolio/first-spatial-bayesian-model/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/portfolio/first-spatial-bayesian-model/</guid>
+      <description>Building on the work in last week’s post, we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit conditional autoregressive models which will better address the spatial autocorrelation in our data.
+Conditional Autoregressive Models Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods–Bayesian and frequentist!</description>
+    </item>
+    
+    <item>
+      <title>New Spatial Bayesian Models</title>
       <link>/portfolio/spatial-bayes-models/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/portfolio/spatial-bayes-models/</guid>
-      <description>Building on the work in last week’s post, we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit conditional autoregressive models which will better address the spatial autocorrelation in our data.
-Conditional Autoregressive Models Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods–Bayesian and frequentist!</description>
+      <description>Last week, I fit an initial CARBayes model which identifies boundaries between counties in Tennessee. This week, I’ll explore some new models and decide which one(s) to present (and whether I want to fit the model to the entire country!).
+Back up a second I’ve never actually tested to see if there is spatial autocorrelation in my data! I think we can see that there is, but we can check with Moran’s I to make sure we need to use spatial models.</description>
     </item>
     
     <item>

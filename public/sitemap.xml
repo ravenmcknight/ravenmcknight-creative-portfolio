@@ -3,10 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/portfolio/spatial-bayes-models/</loc>
-  </url>
-  
-  <url>
     <loc>/about/</loc>
     <lastmod>2019-04-02T21:05:33+05:30</lastmod>
   </url>
@@ -17,8 +13,16 @@
   </url>
   
   <url>
+    <loc>/portfolio/first-spatial-bayesian-model/</loc>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/portfolio/spatial-bayes-models/</loc>
   </url>
   
   <url>

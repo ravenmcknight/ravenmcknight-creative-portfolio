@@ -1,86 +1,142 @@
 ---
-title: "Spatial Bayesian Models"
+title: "New Spatial Bayesian Models"
 author: "Raven McKnight"
-date: "4/24/2019"
+date: "5/2/2019"
 draft: true
-weight: 1
-output: 
-  blogdown::html_page
+ouput: 
+  blogdown::html_page:
+    toc: true
 ---
+
 ```{r include = FALSE}
 library(ggplot2)
 library(urbnmapr)
 library(wesanderson)
 library(tidyverse)
+library(CARBayes)
+library(sp)
+library(ape)
+library(spdep)
+library(rgdal)
+library(spdep)
 
 bc <- read_csv("/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv")
 
 counties <- urbnmapr::counties %>%
   mutate(fips = as.numeric(county_fips))  # create field to join on
 
-bc_spatial <- full_join(bc, counties, by ="fips")   # join with county data from urbnmapr
+counties2 <-  st_read('/Users/raven/Documents/tl_2016_us_county', 'tl_2016_us_county')
 
-bc_na <- bc %>%
-  filter(!is.na(desert))
+bc <- bc %>%
+  mutate(geoid = substr(GEO.id, start=nchar(GEO.id)-4, stop=nchar(GEO.id))) %>%
+  mutate(GEOID = as.factor(geoid))
 
-bc_spatial_na <- bc_spatial %>%
-  filter(!is.na(desert))   # remove NAs for mapping
+
+tn <- bc %>%
+  mutate(GEOID=as.factor(fips)) %>%
+  filter(State=="Tennessee")
+
+tn.spatial <- merge(x=counties2, y=tn, by="GEOID", all.x=FALSE)
+
+bc.spatial <- merge(counties2, bc, by="GEOID", all.x=FALSE)
+bc.sp <- as(bc.spatial, "Spatial")
+
+tn.sp <- sf:::as_Spatial(tn.spatial$geom) 
 ```
 
 
-Building on the work in [last week's post](https://www.ravenmcknight.com/portfolio/spatial-bayes-intro/), we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit *conditional autoregressive* models which will better address the spatial autocorrelation in our data.
-  
-### Conditional Autoregressive Models
-Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods--Bayesian and frequentist!-- aren't useful in modelling spatial data. Enter CARBayes!
+Last week, I fit an initial CARBayes model which identifies boundaries between counties in Tennessee. This week, I'll explore some new models and decide which one(s) to present (and whether I want to fit the model to the entire country!). 
 
-Conditional autoregressive, or CAR, models account for the spatial correlation in our data, making our analyses more complete and informed. CAR models can be fit in frequentist contexts, though spatial correlation is often dealt with by spatially autocorreleted random effects in Bayesian hierarchical models. 
+## Back up a second
 
-For this project, we'll use the R package CARBayes. CARBayes has a lot of built-in functionality that allows us to start modelling without diving too deep into the theory (more on the details of CARBayes in our Correlated Data tutorial!). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) is a great resource with plenty of information and examples to get started!
+I've never actually tested to see if there is spatial autocorrelation in my data! I think we can *see* that there is, but we can check with Moran's I to make sure we need to use spatial models. 
 
-### Which Model do we fit?
-
-To understand *who lives with limited access to birth control*, we want to locate concentrated areas of poor access. Once we've identified those areas, we can summarize who lives there and potentially move on to more sophisticated models. 
-
-With this in mind, our first task is *clustering*. My family recently moved to Tennessee; if we zoom in on this state, we can see that there are clear clusters of deserts/not deserts. 
 ```{r}
-tn <- bc_spatial_na %>% filter(State=="Tennessee")
+W.nb <- poly2nb(tn.spatial, row.names=rownames(tn.spatial))   # Create neighborhood matrix
+W.list <- nb2listw(W.nb, style="B")
+W <- nb2mat(W.nb, style="B")   # We'll need this W for our models below, as well!
 
-ggplot() +
-  geom_polygon(data = tn, mapping = aes(x = long, y = lat, group = group, fill = tn$desert), color = "NA") +
-  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
-  labs(x="", y="") +
-  guides(fill=guide_legend(title="Desert")) + 
-  theme_minimal()
+moran.mc(tn.spatial$WomenPerClinic, W.list, nsim = 9999) # mc simulations
 ```
 
-We can also see that clustering seems to occur across the entirety of the South--this means that our previous model, which only took `Region` into account, was insufficient to describe the spatial variation.  
+This is kind of surprising! My Moran's I test tells me that the Tennessee data *might* be spatially random. With `observed rank = 8569`, we know that out of 10000 samples, my data is "less random" than about 8500 of them. I'll try Moran's I on the entire country to see if Tennessee is a strange case or if my data really is random. 
+
+
+```{r cache=TRUE}
+st_rook = function(a, b=a) {st_relate(a, b, pattern = "F***1****")}
+
+bc.sp.clean <- bc.spatial %>%    # takes a long time, try not to run again
+  mutate(WomenPerClinicClean = replace_na(WomenPerClinic, 0)) %>%
+  mutate(NB_ROOK = st_rook(.))
+
+for(i in 1:nrow(bc.sp.clean)){
+  bc.sp.clean$nb_length[i] <- length(bc.sp.clean$NB_ROOK[[i]])
+}
+
+bc.sp.clean <- bc.sp.clean %>%
+  dplyr::select(-NB_ROOK) %>%
+  filter(nb_length > 0) 
+
+us.nb <- poly2nb(bc.sp.clean)
+
+us.list <- nb2listw(us.nb, style="B")   
+
+moran.mc(bc.sp.clean$WomenPerClinicClean, us.list, nsim=9999)
+```
+
+This makes more sense! Over the entire country, we see that our real data is "less random" than any randomly generated data. This means that we're on the right track to be fitting spatial models. 
+
+## New Models
+
+First, I'll fit a model often used in ecological regression. The goal of this model is to identify factors that affect our response variable--women per clinic. This model is fit using the `S.CARleroux` function in the `CARBayes` packages. Like the model from last week, W is a neighborhood matrix. For this model, I'll include all of my potential covariates to determine which are impactful. 
+
+```{r eval=FALSE}
+form <- WomenPerClinic ~ MedianInc + PercRural + PercHSGrad + PercPoverty + PercWhite
+
+new.spatial.model <- S.CARleroux(formula=form, data=tn.spatial, family="gaussian", W=W, burnin=100000, n.sample=300000, thin=20)
+```
+
+```{r include = FALSE}
+form <- WomenPerClinic ~ MedianInc + PercRural + PercHSGrad + PercPoverty + PercWhite
+
+new.spatial.model <- S.CARleroux(formula=form, data=tn.spatial, family="gaussian", W=W, burnin=100000, n.sample=300000, thin=20)
+```
 ```{r}
-south <- bc_spatial_na %>% filter(Region=="South")
-ggplot() +
-  geom_polygon(data = south, mapping = aes(x = long, y = lat, group = group, fill = south$desert), color = "NA") +
-  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
-  labs(x="", y="") +
-  guides(fill=guide_legend(title="Desert")) + 
-  theme_minimal()
+print(new.spatial.model)
 ```
 
-Luckily for us, CARBayes has a built-in ability to model spatial clusters following the work of Lee and Mitchell (2012). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) has an informative toy example for this method starting on page 21. 
- 
-For the purpose of clustering, Lee and Mitchell's model doesn't take any predictors. Instead, it locates boundaries between clusters of high disease risk or, in our case, limited birth control access. In the next section, we'll fit a model using this method via the `S.CARdissimilarity()` function in CARBayes. 
+These coefficients are a bit strange because Median Income is on a very different scale than the other predictors. Briefly, here's what we can take away from this model:
 
+* An increase in median income causes an increase in women per clinic -- this seemed counterintuitive to me at first, but we do see that wealthier areas tend to be more populous and therefore more likely to have too few clinics. 
+* An increase in percent rural causes a *large* decrease in women per clinic -- this is where the women per clinic metric starts to run into problems. Lots of those rural counties have 0 or 1 clinic, but can't be counted as a desert by our metric because there aren't enough women in need!
+* An increase in the proportion of adults with high school diplomas causes an increase in women per clinic. I think this follows the same logic as median income. 
+* An increase in the proportion of residents living under the poverty line causes a decrease in women per clinic. Same logic as high school graduates!
+* An increase in percent white causes a decrease in women per clinic -- as we might expect, white communities are better served than non-white ones. 
 
+Out of curiosity, I'll fit a model using each race (as collected by the census) as predictors to get a sense of which communities are most underserved. We should keep in mind that this model is fit only on Tennesee which isn't the most diverse state -- it might be better to fit this model on the entire country. 
 
-### Progress since last week
-This was definitely a minimal progress week! Since last week, I reread the CARBayes vignette, chose which model to fit, worked on implementing that model, and wrote this post. I did some slight touch-ups on checkpoint 4 but nothing major!
+```{r include = FALSE}
+race.form <- WomenPerClinic ~ PercWhite + PercBlack + PercAmInd + PercAsian + PercHawaii + PercTwoOrMore + PercHisp
 
-```{r include=FALSE}
-# add credits
-# figure out mathJax
-# fit model
-# can we map the boundaries over Tennessee to see how well we did?
-# summarize clusters
-# theorize why the clusters exist in TN
+race.spatial.model <- S.CARleroux(formula=race.form, data=tn.spatial, family="gaussian", W=W, burnin=100000, n.sample=300000, thin=20)
 ```
+```{r eval = FALSE}
+race.form <- WomenPerClinic ~ PercWhite + PercBlack + PercAmInd + PercAsian + PercHawaii + PercTwoOrMore + PercHisp
+
+race.spatial.model <- S.CARleroux(formula=race.form, data=tn.spatial, family="gaussian", W=W, burnin=100000, n.sample=300000, thin=20)
+```
+
+```{r}
+print(race.spatial.model)
+```
+
+Our intuitive takeaways from this model: 
+
+ * White and American Indian are the only groups that cause a *decrease* in women per clinic -- I wonder if the American Indian phenomenon follows the same logic as the rural/high school grad coefficients in the previous model. I don't think there are that many counties with significant native populations in Tennessee, and I'd guess they are rural, undereducated counties. 
+ * Asian and Hawaiin/Pacific Islander cause the greatest increase in women per clinic. 
+
+I think that these coefficients will change if we fit the model to the entire country, but the signs and intuition will probably stay the same. 
+
+## Progress since last week
+This was my minimal progress week! I fit the models here, read the original papers about S.CARdissimilarity and S.CARleroux, and spent *a lot* of time unsuccessfully trying to fit models to the entire country. Oh well!
 

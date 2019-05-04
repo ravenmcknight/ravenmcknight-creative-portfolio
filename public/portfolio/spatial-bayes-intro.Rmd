@@ -2,10 +2,12 @@
 title: "Spatial Bayes Introduction"
 author: "Raven McKnight"
 date: "4/14/2019"
-image: img/portfolio/bayes_checkpoint.png
+image: img/portfolio/bayes_checkpoint_4.png
 showonlyimage: no
 draft: true
-weight: 0
+ouput: 
+  blogdown::html_page:
+    toc: true
 ---
 
 Birth control is a critical aspect of basic health care. Accessible contraceptive services have numerous tangible benefits from reducing teen pregnancy to lowering abortion rates. At the most basic level, birth control empowers women to navigate the world and their health more freely. The "pro-life" movement and current political climate put this vital resource at risk. With this in mind, I decided to study access to birth control in the United States. 
@@ -68,12 +70,14 @@ predictors <- bc %>%
 summary(predictors)
 ```
 
-\
+
 
 ### Visualization and Exploration
 
 
 A natural first visualization is to check where contraceptive deserts in the United States are. We can map the simple yes/no `desert` variable to get a sense of where there's less than one clinic per 1000 women in need. 
+
+
 ```{r}
 bc_spatial_na <- bc_spatial %>%
   filter(!is.na(desert))   # remove NAs for mapping
@@ -81,7 +85,7 @@ bc_spatial_na <- bc_spatial %>%
 ggplot() +
   geom_polygon(data = bc_spatial_na, mapping = aes(x = long, y = lat, group = group, fill = bc_spatial_na$desert), color = "NA") +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
+  scale_fill_manual(values=wes_palette("GrandBudapest1")) +
   labs(x="", y="") +
   guides(fill=guide_legend(title="Desert")) + 
   theme_minimal()
@@ -116,15 +120,20 @@ bc_na <- bc %>%
 
 ggplot(bc_na, aes(x=Region)) +
   geom_bar(aes(fill=desert)) +
-  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest2")) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest1")) +
   theme_minimal()
 ```
+
+```{r include=FALSE}
+ #GrandBudapest1 = c("#F1BB7B", "#FD6467", "#5B1A18", "#D67236"),
+```
+
 
 
 One major limitation of this study is that any county with fewer than 1000 women in need cannot be defined as a desert, even if there are 0 clinics reported! 
 ```{r message=FALSE, warning=FALSE}
 ggplot(bc_na, aes(x=as.numeric(TotalPop))) +
-  geom_histogram(fill="#E6A0C4") +
+  geom_histogram(fill="#F1BB7B") +
   facet_wrap(~desert, scales="free") +
   lims(x= c(0, 200000)) +
   labs(x="Total Population", y="Count") +
@@ -138,7 +147,7 @@ Before we build models, we can check how our outcome (desert or women per clinic
 predictors %>%
   gather(-WomenPerClinic, -TotalWomen, -TotalPop, -TotalWomenUnder20, key = "var", value = "value") %>%
   ggplot(aes(x = value, y = WomenPerClinic)) +
-    geom_point(color="#C6CDF7") +
+    geom_point(color="#FD6467") +
     facet_wrap(~ var, scales = "free") +
     lims(y=c(0, 10000)) +   # cutting off a fair amount of data for clarity
     theme_minimal()
@@ -163,7 +172,7 @@ not_deserts <- bc %>%
 sapply(not_deserts, mean, na.rm=TRUE)
 ```
 
-\
+
 
 ### Initial Model
 
@@ -171,7 +180,7 @@ We'll start by implementing simple, non-spatial models. I think the most intuiti
 
 ```{r}
 ggplot(bc_na %>% filter(WomenPerClinic < 5000), aes(x=WomenPerClinic)) + 
-  geom_density(color="#E6A0C4") +
+  geom_density(color="#FD6467") +
   facet_wrap(~Region) +
   labs(x="Women per Clinic", y="Density") +
   theme_minimal()
