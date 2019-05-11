@@ -6,10 +6,11 @@ output:
   blogdown:::html_document
 ---
 
-### Common introduction 
+Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods -- Bayesian and frequentist! -- aren't useful in modelling spatial data. In this series of blog posts, we'll explore Bayesian methods to describe variation across space. 
+
 ### Case study: Contracpetive Deserts
 
-Birth control is a critical aspect of basic health care. Accessible contraceptive services reduce unplanned pregnancies, lower abortion rates, and empower women to navigate the world and their health more freely. Over 20 million women in the United States are in need of publicly-funded birth control -- over 1 million of them live in a county without a single provider. 
+Birth control is a critical aspect of basic health care. Accessible contraceptive services reduce unplanned pregnancies, lower abortion rates, and empower women to navigate the world and their health more freely. Over 20 million women in the United States are in need of publicly-funded birth control and over 1 million of them live in a county without a single provider. 
 
 This project was initially inspired by a map from [Power to Decide](https://powertodecide.org/what-we-do/access/access-birth-control). They define a *contraceptive desert* as an area where a single birth control provider must serve 1000 or more women in need. In this project, I model the ratio of *women in need of publicly funded services* per *clinic providing publicly funded services*. This is a naive metric, but I think an intuitive one in beginning to understand birth control accessibility. Admittedly, access is more nuanced than the simple presence of clinics. There are many other factors to consider: physical accessibility, stigma, under-education, or any other number of personal characteristics. Developing a better metric for accessibility is an exciting area for future work!
 
@@ -34,7 +35,7 @@ Now we have data for (almost) every county in the United States! I'll focus on t
 | PercWhite, PercBlack ....           | Seven variables recording racial demographics of each county, ACS 2015                                                    |
 | PercRural                           | Percent of population living in rural area, ACS 2015                                                                      |
 
-\ 
+
 
 Because we have so much data, I'll also filter to get *just* counties in my home state, North Carolina. This will speed up our models and make visualization much easier!
 
@@ -92,7 +93,11 @@ With this map, we can start to identify counties with particularly high patient-
 
 #### Spatial autocorrelation?
 
-Before we go on with spatial modeling, we should confirm that our data isn't spatially random. If it *is*, then we don't need to use spatial methods. We can check for spatial autocorrelation using Moran's I. If Moran's I is close to 1, we have positive spatial autocorrelation (clustering) and if it's close to 0, we have negative autocorrelation (repulsion). 
+Before we go on with spatial modeling, we should confirm that our data isn't spatially random. If it *is*, then we don't need to use spatial methods. We can check for spatial autocorrelation using Moran's I. If Moran's I is close to 1, we have positive spatial autocorrelation and if it's close to -1, we have negative autocorrelation. 
+
+![](/portfolio/contraceptive-deserts-bayes_files/spat_cor.png)
+
+
 
 We can check if our data is spatially random by randomly assigning values to each county in North Carolina 10000 times and taking the Moran's I of each simulation. Then, we compare our *real* data to the simulated data. If our data is "less random" than any of our simulations, we can feel confident that we need to use spatial methods. 
 
@@ -106,6 +111,11 @@ moran.mc(na.omit(nc_sp$WomenPerClinic), nc_w, nsim = 9999) # markov chain simula
 ```
 
 This test tells us that our real data is not *the least* random, but it is less random than about 98% of the simulations with slight positive spatial autocorrelation. My guess is that we would see stronger spatial autocorrelation if we looked at the entire country, or at North Carolina by census tract. Either way, Moran's I confirms that we should be using spatial methods!
+
+
+#### CAR Models 
+
+To handle spatial autocorrelation in our data, we'll fit Conditional Autoregressive (CAR) models using the `CARBayes` package. CAR models are often used to model areal data such as disease risk in epidemiology, ecologocial phenomena, or housing prices. They are most often fit in Bayesian contexts using random effects to model spatial autocorrelation. Hierarchical Bayesian models are particularly helfpul in dealing with the structure of spatial data. I'll fit two types of CAR models below -- one which assumes a global level of smoothness in spatial autocorrelation and one which seeks to identify boundaries or breaks in the response surface. 
 
 
 #### A Familiar Model & Variable Selection
@@ -142,56 +152,41 @@ predictors %>%
     project_theme_plot 
 ```
 
-To better understand these relationships, I'll fit a Leroux model using each of these five predictors so we can see which are most "important." For more on models like this, you can check out [Katie's case study](http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/). She fits Besag-York-Mollie (BYM) models which are the precursor to Leroux! I chose to use Leroux rather than BYM because its R implementation is more suited to continuous or Gaussian response variables (vignette, page 4-5). The Leroux model is essentially an extension of the BYM model -- it's main advantage is that it handles *overdispersion* with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with "real-world" spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren't too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects. 
+To better understand these relationships, I'll fit a Leroux model using four of these predictors so we can see which are most "important." For more on models like this, you can check out [Katie's case study](http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/). She fits Besag-York-Mollie (BYM) models which are the precursor to Leroux! I chose to use Leroux rather than BYM because its R implementation is more suited to continuous or Gaussian response variables (vignette, page 4-5). The Leroux model is essentially an extension of the BYM model -- it's main advantage is that it handles *overdispersion* with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with "real-world" spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren't too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects. 
 
-![](/Users/raven/Documents/sites/ravenmcknight/static/img/portfolio/lerouxstatement.png)
+![](/portfolio/contraceptive-deserts-bayes_files/lerouxstatement.png)
 
 
 We'll need the CARBayes package to implement our CAR models. This package includes several primary functions, each of which corresponds to a different model with different priors and model structures. For more technical explanation of the entire package, check out the [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf). 
 
 The last thing we need to start fitting models is a *neighborhood structure*. This model uses a queen neighborhood structure. This means that any two counties that share a single point of contact are considered neighbors. We represent the neighborhood structure using binary matrix W, which has entries equal to 1 for polygons that are neighbors and 0 for polygons that are not. 
 
-```{r include = FALSE}
-# might be nice to have an image of this and what is spatial data
-```
+![](/portfolio/contraceptive-deserts-bayes_files/neighborhoods.png)
+
+I decided to leave out percent rural as a predictor because some very rural counties have so few women they can't count as a desert by our metric! This was throwing off the rest of the coefficients; it's more informative to look at this model with fewer predictors. I'm also taking fewer Markov Chain Monte Carlo simulations than I would ideally because these models are computationally expensive and take a *very* long time to run.  
 
 ```{r results = "hide"}
 library(CARBayes)
 
-formula <- WomenPerClinic ~ MedianInc + PercHSGrad + PercPoverty + PercRural + PercWhite   # Our model formula
+formula <- WomenPerClinic ~ MedianInc + PercHSGrad + PercPoverty + PercWhite   # Our model formula
 
 nc_sp_mod <- nc_sp[which(!is.na(nc_sp$WomenPerClinic)), ] # remove county with na values
 nc_sp_mod <- nc_sp[which(!is.na(nc_sp$PercWhite)), ] # and missing demographic data
+```
 
+```{r results = "hide"}
 W.nb <- poly2nb(nc_sp_mod, row.names=rownames(nc_sp_mod), queen=TRUE)   # Create neighborhood matrix
 W.list <- nb2listw(W.nb, style="B")
 W <- nb2mat(W.nb, style="B") 
 
-nc_leroux <- S.CARleroux(formula=formula, data=nc_sp_mod, family="gaussian", W=W, burnin=100000, n.sample=300000, thin=20)
+nc_leroux <- S.CARleroux(formula=formula, data=nc_sp_mod, family="gaussian", W=W, burnin=10000, n.sample=30000, thin=20)
 ```
+
 ```{r}
 print(nc_leroux)
 ```
 
-
-The good news: we have coefficients! The bad news: the 95% coverage interval of almost coefficient includes zero. This means that we can't confidently conclude that percent of high school graduates has a positive correlation with women per clinic (for example). Ignoring the significance of the predictors for a moment, the quick takeaways from this model are
-
-* Median income, percent high school graduates, percent living in poverty, and percent white are correlated with *higher* ratios of women per clinic -- ie, worse access to birth control. 
-* Percent rural is the only predictor correlated with lower ratios, and the only predictor whose coverage interval does not include zero. This seems significant but is primarily because very rural counties don't have enough women in need to count as a desert by our metric! This reveals the major weakness of this analysis. 
-
-
-It may be more informative to fit a model without percent rural: 
-```{r results="hide"}
-formula_2 <- WomenPerClinic ~ MedianInc + PercHSGrad + PercPoverty + PercWhite
-
-nc_leroux_2 <- S.CARleroux(formula=formula_2, data=nc_sp_mod, family="gaussian", W=W, burnin=100000, n.sample=300000, thin=20)
-```
-
-```{r}
-print(nc_leroux_2)
-```
-
-This is more like it! The coverage intervals for percent in poverty and percent white still cross zero, but the coefficients make a bit more sense: 
+The good news: we have coefficients! The bad news: the 95% coverage intervals for percent in poverty and percent white cross zero, meaning we can't be too confident about their relationship with women per clinic. Putting that aside for a moment, our intuitive takeways are: 
 
 * Median income and percent high school graduates are positively correlated with women per clinic, likely because education and income tend to be concentrated in more populous, urban areas
 * Poverty is positively correlated with women per clinic
@@ -207,9 +202,10 @@ Generally, CAR models such as BYM or Leroux force a single global level of spati
 
 Like the globally-smooth models above, Lee & Mitchell use a neighborhood matrix W. In the Leroux model we fit, W is binary and values are assumed to be fixed at either 0 or 1. The Lee & Mitchell prior attempts to model the values in W as if they were random quantities rather than fixed. It models each entry in W as the *dissimilarity* between polygons. The model takes $q$ non-negative dissimilarity metrics $z$. These metrics are our covariates -- they can be physical characteristics of the polygons (such as proportion of land covered by water) or demographics (such as percent high school grad or median income!). The formal model statement is below. More details can be found in the [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) or the [original paper](https://academic.oup.com/biostatistics/article/13/3/415/248273). Note there is also a non-binary option which can be specified by setting `W.binary = FALSE` below. 
 
-![](/Users/raven/Documents/sites/ravenmcknight/static/img/portfolio/leemitchellstatement.png)
+![](/portfolio/contraceptive-deserts-bayes_files/leemitchellstatement.png)
 
 
+Without getting too bogged down in the details, this model essentially says that the entries in neighborhood matrix $W$ are 1 if a dissimilarity metric $z$ is different enough in areal units $k$ and $j$. The $\alpha$ priors are given uniform distributions with varying $M_i$ values to ensure priors are vague. 
 ```{r include = FALSE}
 # if we get mathjax working, rewrite with proper notation (same for model statements)
 ```
@@ -229,15 +225,16 @@ Now, we're ready to fit!
 ```{r results= "hide"}
 formula <- WomenPerClinic ~ 1
 
-nc_dissimilarity <- S.CARdissimilarity(formula=formula, data=nc_sp_mod, family="gaussian", W=W, Z=list(Z.inc=Z.inc, Z.grad=Z.grad), W.binary=TRUE, burnin=100000, n.sample=300000, thin=20)
+nc_dissimilarity <- S.CARdissimilarity(formula=formula, data=nc_sp_mod, family="gaussian", W=W, Z=list(Z.inc=Z.inc, Z.grad=Z.grad), W.binary=TRUE, burnin=10000, n.sample=30000, thin=20)
 ```
 
-```{r}
+```{r eval=FALSE}
 print(nc_dissimilarity)
 ```
 
 
 Our intuitive takeaways from this output: 
+
 * The average number of women per clinic is about 1700
 * Income and high school graduates are both correlated with slightly higher values of women per clinic
 * `alpha.min` is the threshold for the dissimilarity metrics, ie a value lower than `alpha.min` will trigger boundary identification. The `alpha.min` values here tell us that percent high school grad is slightly more important than median income, though the median income value is likely so low because median income has much higher values than percent high school grad. 
@@ -266,6 +263,8 @@ ggplot() +
   project_theme_map
 ```
 
+
+
 #### Bonus: Interactive Results!
 Just for fun, we can also visualize these results interactively using leaflet!
 
@@ -288,7 +287,7 @@ addPolygons(fillColor = ~colours(WomenPerClinic),
             color="white", 
             weight=1,
             fillOpacity = .9, 
-            group= "Variables", 
+            group= "Access", 
             highlight = highlightOptions(
                bringToFront = FALSE),
             label = labels,
@@ -312,7 +311,8 @@ addCircles(lng = ~nc_boundaries_sp$X,
 addScaleBar(position="bottomleft") %>%
   
 addLayersControl(
-  overlayGroups = c("Basemap", "Variables", "Boundaries"),
+  baseGroups = c("Access"), 
+  overlayGroups = c("Basemap", "Boundaries"),
   options = layersControlOptions(collapsed=FALSE)
 )
 
@@ -320,8 +320,7 @@ results_map
 ```
 
 
-
-#### Conclusions
+### Conclusions
 
 CARBayes gives us some great tools to start modelling accessibility! We were able to identify some potential covariates and start locating boundaries between clusters! One major limitation of this implementation is the the model locates boundaries as points which makes it difficult to identify closed clusters. There is no simple way to extract the identified clusters, so our analysis sort of ends with visualization. This works well for a single state but would be overwhelming, I think, on the entire country. 
 
@@ -330,4 +329,9 @@ There is a lot of exciting future work for this project. There are many other CA
 For more case studies, check out [Son's post on public transit](https://sonphan.netlify.com/post/transit-bayes/) or [Katie's post on vaccination in California](http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/)!
 
 
+### Sources
+Besag J, York J, Mollie A (1991). “Bayesian Image Restoration with Two Applications in Spatial Statistics.” Annals of the Institute of Statistics and Mathematics, 43, 1–59.
 
+Lee D, Mitchell R (2012). “Boundary Detection in Disease Mapping Studies.” Biostatistics, 13, 415–426.
+
+Leroux B, Lei X, Breslow N (2000). “Estimation of Disease Rates in Small Areas: A New Mixed Model for Spatial Dependence.” In M Halloran, D Berry (eds.), Statistical Models in Epidemiology, the Environment and Clinical Trials, pp. 179–191. Springer-Verlag, New York.

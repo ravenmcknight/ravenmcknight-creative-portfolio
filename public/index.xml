@@ -45,7 +45,8 @@ Back up a second I’ve never actually tested to see if there is spatial autocor
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/portfolio/contraceptive-deserts-bayes/</guid>
-      <description>Common introduction  Case study: Contracpetive Deserts Birth control is a critical aspect of basic health care. Accessible contraceptive services reduce unplanned pregnancies, lower abortion rates, and empower women to navigate the world and their health more freely. Over 20 million women in the United States are in need of publicly-funded birth control – over 1 million of them live in a county without a single provider.</description>
+      <description>Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods – Bayesian and frequentist! – aren’t useful in modelling spatial data. In this series of blog posts, we’ll explore Bayesian methods to describe variation across space.
+Case study: Contracpetive Deserts Birth control is a critical aspect of basic health care.</description>
     </item>
     
   </channel>

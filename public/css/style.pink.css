@@ -50,12 +50,6 @@ section.background-secondary {
 .section-inverse .heading:after {
   background: #fff;
 }
-
-.MathJax {
-  color: black;
-  background-color: white;
-}
-
 .italic {
   font-style: italic;
   font-family: "Georgia", "Times New Roman", Times, serif;
@@ -329,7 +323,7 @@ SIDEBAR + RIGHT COLUMN
     z-index: 0;
     padding: 0 1.7em 0 0em;
 }
-@media screen and (min-width: 990px) {
+@media screen and (min-width: 992px) {
   .sidebar-content {
     padding-left: 0px;
     padding-right: 18px;
@@ -657,8 +651,6 @@ p.social.social--big i {
 COPYRIGHT
 =====================
 */
-
-
 .copyright {
   color: #999999;
   font-size: 13px;
