@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bayes_progresses on raven mcknight</title>
+    <link>/bayes_progress/</link>
+    <description>Recent content in Bayes_progresses on raven mcknight</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/bayes_progress/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A First Spatial Bayesian Model</title>
+      <link>/bayes_progress/first-spatial-bayesian-model/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/bayes_progress/first-spatial-bayesian-model/</guid>
+      <description>Building on the work in last week’s post, we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit conditional autoregressive models which will better address the spatial autocorrelation in our data.
+Conditional Autoregressive Models Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods–Bayesian and frequentist!</description>
+    </item>
+    
+    <item>
+      <title>New Spatial Bayesian Models</title>
+      <link>/bayes_progress/spatial-bayes-models/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/bayes_progress/spatial-bayes-models/</guid>
+      <description>Last week, I fit an initial CARBayes model which identifies boundaries between counties in Tennessee. This week, I’ll explore some new models and decide which one(s) to present (and whether I want to fit the model to the entire country!).
+Back up a second I’ve never actually tested to see if there is spatial autocorrelation in my data! I think we can see that there is, but we can check with Moran’s I to make sure we need to use spatial models.</description>
+    </item>
+    
+    <item>
+      <title>Spatial Bayes Introduction</title>
+      <link>/bayes_progress/spatial-bayes-intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/bayes_progress/spatial-bayes-intro/</guid>
+      <description>Birth control is a critical aspect of basic health care. Accessible contraceptive services have numerous tangible benefits from reducing teen pregnancy to lowering abortion rates. At the most basic level, birth control empowers women to navigate the world and their health more freely. The “pro-life” movement and current political climate put this vital resource at risk. With this in mind, I decided to study access to birth control in the United States.</description>
+    </item>
+    
+  </channel>
+</rss>

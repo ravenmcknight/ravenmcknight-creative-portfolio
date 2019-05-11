@@ -1,0 +1,184 @@
+---
+title: "A First Spatial Bayesian Model"
+author: "Raven McKnight"
+date: "4/24/2019"
+draft: true
+ouput: 
+  blogdown::html_page:
+    toc: true
+---
+```{r include = FALSE}
+library(ggplot2)
+library(urbnmapr)
+library(wesanderson)
+library(tidyverse)
+
+bc <- read_csv("/Users/raven/Documents/Classes/BayesCapstone/ravenData_Apr17.csv")
+
+counties <- urbnmapr::counties %>%
+  mutate(fips = as.numeric(county_fips))  # create field to join on
+
+bc_spatial <- full_join(bc, counties, by ="fips")   # join with county data from urbnmapr
+
+bc_na <- bc %>%
+  filter(!is.na(desert))
+
+bc_spatial_na <- bc_spatial %>%
+  filter(!is.na(desert))   # remove NAs for mapping
+```
+
+
+Building on the work in [last week's post](https://www.ravenmcknight.com/portfolio/spatial-bayes-intro/), we can start fitting spatial Bayesian models to our data. We will use the CARBayes package to fit *conditional autoregressive* models which will better address the spatial autocorrelation in our data.
+  
+### Conditional Autoregressive Models
+Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods--Bayesian and frequentist!-- aren't useful in modelling spatial data. Enter CARBayes!
+
+Conditional autoregressive, or CAR, models account for the spatial correlation in our data, making our analyses more complete and informed. CAR models can be fit in frequentist contexts, though spatial correlation is often dealt with by spatially autocorreleted random effects in Bayesian hierarchical models. 
+
+For this project, we'll use the R package CARBayes. CARBayes has a lot of built-in functionality that allows us to start modelling without diving too deep into the theory (more on the details of CARBayes in our Correlated Data tutorial!). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) is a great resource with plenty of information and examples to get started!
+
+### Which Model do we fit?
+
+To understand *who lives with limited access to birth control*, we want to locate concentrated areas of poor access. Once we've identified those areas, we can summarize who lives there and potentially move on to more sophisticated models. 
+
+With this in mind, our first task is *clustering*. My family recently moved to Tennessee; if we zoom in on this state, we can see that there are clear clusters of deserts/not deserts. 
+```{r}
+tn <- bc_spatial_na %>% filter(State=="Tennessee")
+head(tn)
+
+ggplot() +
+  geom_polygon(data = tn, mapping = aes(x = long, y = lat, group = group, fill = tn$desert), color = "NA") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest1")) +
+  labs(x="", y="") +
+  guides(fill=guide_legend(title="Desert")) + 
+  theme_minimal()
+```
+
+We can also see that clustering seems to occur across the entirety of the South--this means that our previous model, which only took `Region` into account, was insufficient to describe the spatial variation.  
+```{r}
+south <- bc_spatial_na %>% filter(Region=="South")
+ggplot() +
+  geom_polygon(data = south, mapping = aes(x = long, y = lat, group = group, fill = south$desert), color = "NA") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest1")) +
+  labs(x="", y="") +
+  guides(fill=guide_legend(title="Desert")) + 
+  theme_minimal()
+```
+
+
+Luckily for us, CARBayes has a built-in ability to model spatial clusters following the work of Lee and Mitchell (2012). The [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) has an informative toy example for this method starting on page 21. 
+ 
+Lee and Mitchell's model is a *spatial smoothing model* which only deals with the spatial autocorrelation in our data. This model doesn't necessarily take predictors or covariates. Instead, it uses dissimilarity measures to locate boundaries between clusters of some variable of interest-- in our case, limited birth control access. In the next section, we'll fit a model using this method via the `S.CARdissimilarity()` function in CARBayes. 
+
+### The model 
+
+First, load the packages we'll need. 
+```{r message=FALSE, warning=FALSE}
+library(CARBayes)
+library(sp)
+library(spdep)
+library(rgdal)
+```
+
+I'll start by fitting a model to Tennessee alone. This is because CARBayes models are complex and take a while to run -- we want to confirm we're happy with our model before we fit it to our entire data set. 
+
+Instead of modelling `desert`, which we can more or less cluster visually, I'll model `WomenPerClinic`. Intuitively, there's a difference between places with 2000 versus 10000 women per clinic, but the clusters can be harder to visualize: 
+
+```{r}
+ggplot() +   # I need to change the breaks here but I'm having a hard time!
+  geom_polygon(data = bc_spatial_na, mapping = aes(x = long, y = lat, group = group, fill = bc_spatial_na$WomenPerClinic), color = "NA") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_gradient(low="#F1BB7B", high="#FD6467") +
+  labs(x="", y="") +
+  guides(fill=guide_legend(title="Desert")) + 
+  theme_minimal()
+```
+
+
+So our goal for this initial CARBayes model is to start identifying the boundaries between these regions! To speed up modelling (but possibly slow down mapping), I'll merge my `bc` data with a TIGER/Line shapefile so that we have one row per US county. Then, I'll convert to an `sp` object and we should be ready to implement CARBayes. 
+```{r}
+counties <-  st_read('/Users/raven/Documents/tl_2016_us_county', 'tl_2016_us_county')
+
+tn <- bc %>%
+  mutate(GEOID=as.factor(fips)) %>%
+  filter(State=="Tennessee")
+
+tn.spatial <- merge(x=counties, y=tn, by="GEOID", all.x=FALSE)
+
+tn.sp <- sf:::as_Spatial(tn.spatial$geom) 
+```
+
+First, we can define a binary neighborhood matrix as follows. The `poly2nb` function creates a list of polygons that share boundary points. This is the same as using a queen neighborhood structure! The `nb2mat` function converts that list to a matrix we can use in our model. W is a 95x95 matrix -- a row and column for each county in Tennessee -- with 0s for counties that don't touch and 1s for counties that do. 
+```{r}
+library(spdep)
+W.nb <- poly2nb(tn.spatial, row.names=rownames(tn.sp))
+
+W.nb
+
+W <- nb2mat(W.nb, style="B", zero.policy=TRUE)
+
+dim(W)
+```
+
+Based on my knowledge of Tennessee and the data exploration I've done so far, I expect percent rural to be a predictor of deserts. I'll visualize and prepare that as a covariate for my model. 
+
+
+```{r}
+ggplot(tn, aes(x=PercRural, y=WomenPerClinic)) +
+  geom_point(color = "#FD6467") +
+  labs(x="Percent Rural", y="Women Per Clinic", subtitle="Many counties have so few women they can't be considered a desert by our measure!") +
+  theme_minimal()
+```
+
+
+
+```{r}
+rural <- tn.spatial$PercRural
+Z.rural <- as.matrix(dist(rural, diag=TRUE, upper=TRUE))
+```
+
+Then, use CARBayes to run the model!
+```{r include=FALSE}
+formula <- WomenPerClinic ~ 1
+model.dissimilarityTN <- S.CARdissimilarity(formula=formula, data=tn.spatial, family="gaussian", W=W, Z=list(Z.rural=Z.rural), W.binary=TRUE, burnin=10000, n.sample=30000, thin=20)
+```
+
+```{r eval=FALSE}
+formula <- WomenPerClinic ~ 1
+model.dissimilarityTN <- S.CARdissimilarity(formula=formula, data=tn.spatial, family="gaussian", W=W, Z=list(Z.rural=Z.rural), W.binary=TRUE, burnin=10000, n.sample=30000, thin=20)
+```
+```{r}
+print(model.dissimilarityTN)
+```
+
+Yay! Our first CAR model! We can access the boundaries this model identified and plot it over a map of Tennessee to see how we did. In the spirit of the CARBayes vignette, we'll use leaflet to make an interactive map!
+
+```{r}
+tn.sp <- as(tn.spatial, "Spatial") # I should redo everything with this version of tn.sp for final
+
+border.locationsTN <- model.dissimilarityTN$localised.structure$W.posterior
+boundary.finalTN <- highlight.borders(border.locations=border.locationsTN, spdata=tn.sp)
+```
+
+```{r warning=FALSE}
+library(leaflet)
+colours <- colorNumeric(palette = c("#F1BB7B", "#FD6467"), domain = tn.spatial$WomenPerClinic)
+map3 <- leaflet(data=tn.spatial) %>%
+addTiles() %>%
+addPolygons(fillColor = ~colours(WomenPerClinic), color="red", weight=1,
+fillOpacity = .9) %>%
+addLegend(pal = colours, values = tn.spatial$WomenPerClinic, opacity = 1,
+title="Women Per Clinic") %>%
+addCircles(lng = ~boundary.finalTN$X, lat = ~boundary.finalTN$Y, weight = 1,
+radius = 2) %>%
+addScaleBar(position="bottomleft")
+map3
+```
+
+We can see that the model *does* start to differentiate boundaries between areas with particularly high `WomenPerClinic` and surrounding areas. They boundaries certainly don't overlap with the boundaries we saw in our earlier map of `desert`. There are lots of things we can try to make this better: more/different covariates, more MCMC iterations, tuned priors, or (maybe) a different CAR model altogether!
+
+
+
+

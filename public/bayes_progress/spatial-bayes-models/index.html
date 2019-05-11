@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>New Spatial Bayesian Models</title>
+<meta name="description" content="Raven McKnight&#39;s personal website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/owl.carousel.css">
+<link rel="stylesheet" href="/css/owl.theme.css">
+
+
+  <link href="/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
+
+ 
+
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+<link href="/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="/img/favicon.png">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-138632608-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+<body>
+  <div id="all">
+      <div class="container-fluid">
+          <div class="row row-offcanvas row-offcanvas-left">
+              <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1671.4">
+  <style type="text/css">
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000}
+    p.p3 {margin: 0.0px 0.0px 12.0px 0.0px; line-height: 14.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Menlo; color: #15171a; -webkit-text-stroke: #15171a; min-height: 14.0px}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: right; line-height: 14.0px; font: 12.0px Menlo; color: #111214; color: rgba(17, 18, 20, 0.3); -webkit-text-stroke: rgba(17, 18, 20, 0.3); min-height: 14.0px}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Menlo; color: #08173e; -webkit-text-stroke: #08173e; min-height: 14.0px}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 17.0px; font: 14.0px '.SF NS Text'; color: #15171a; -webkit-text-stroke: #15171a}
+    li.li2 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000}
+    li.li4 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Times; color: #0000dc; -webkit-text-stroke: #000000}
+    li.li9 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 15.0px; font: 12.0px '.SF NS Text'; color: #363c44}
+    span.s1 {text-decoration: underline ; font-kerning: none}
+    span.s2 {font-kerning: none}
+    span.s3 {-webkit-text-stroke: 0px #000000}
+    span.s4 {text-decoration: underline ; font-kerning: none; color: #0000dc}
+    span.s5 {font-kerning: none; -webkit-text-stroke: 0px #363c44}
+    table.t1 {border-collapse: collapse}
+    td.td1 {width: 279.0px; padding: 0.0px 10.0px 0.0px 10.0px}
+    td.td2 {width: 279.0px; min-width: 50.0px; padding: 0.0px 10.0px 0.0px 10.0px}
+    td.td3 {width: 465.0px; padding: 0.0px 10.0px 0.0px 10.0px}
+    ul.ul1 {list-style-type: disc}
+    ul.ul2 {list-style-type: none}
+  </style>
+</head>
+<body>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; line-height: 28.0px; font: 24.0px Times; color: #0000e9; -webkit-text-stroke: #0000dc"><span class="s1"><a href="file:///Users/raven/Documents/sites/ravenmcknight/themes/hugo-creative-portfolio-theme/layouts/partials/%7B%7B%20.Site.BaseURL%20%7D%7D"><b>raven mcknight</b></a></span></h1>
+<p class="p2"><span class="s2"></span></p>
+<p class="p3"><span class="s2">stats! data science! visualization!</span></p>
+<p class="p2"><span class="s2"></span></p>
+<ul class="ul1">
+  <li class="li2"><span class="s3"></span><span class="s2"></span></li>
+  <li class="li4"><span class="s3"><a href="file:///Users/raven/Documents/sites/ravenmcknight/themes/hugo-creative-portfolio-theme/layouts/partials/%7B%7B%20absURL%20.url%20%7D%7D"><span class="s4">Home</span></a></span></li>
+  <li class="li2"><span class="s3"></span><span class="s2"></span></li>
+  <li class="li4"><span class="s3"><a href="file:///Users/raven/Documents/sites/ravenmcknight/themes/hugo-creative-portfolio-theme/layouts/partials/%7B%7B%20absURL%20.url%20%7D%7D"><span class="s4">About</span></a></span></li>
+  <li class="li2"><span class="s3"></span><span class="s2"></span></li>
+  <li class="li4"><span class="s3"><a href="file:///Users/raven/Documents/sites/ravenmcknight/themes/hugo-creative-portfolio-theme/layouts/partials/%7B%7B%20absURL%20.url%20%7D%7D"><span class="s4">Get in touch</span></a></span></li>
+  <li class="li2"><span class="s3"></span><span class="s2"><span class="Apple-converted-space"> </span></span></li>
+</ul>
+<p class="p2"><span class="s2"><p class="social">
+  
+  
+  
+  
+  
+  <a href="mailto:raven.i.mcknight@gmail.com" data-animate-hover="pulse" class="email">
+    <i class="fa fa-envelope"></i>
+  </a>
+  
+  
+  <a href="https://www.linkedin.com/in/raven-mcknight-0703a5175/" data-animate-hover="pulse" class="external">
+    <i class="fa fa-linkedin"></i>
+  </a>
+  
+  
+  
+  <a href="https://github.com/" data-animate-hover="pulse" class="external">
+    <i class="fa fa-github"></i>
+  </a>
+  
+  
+  
+</p>
+</span></p>
+<p class="p3"><span class="s2"> &copy;2019 Raven McKnight  | Template by <a href="https://bootstrapious.com/free-templates" class="external">Bootstrapious.com</a>
+
+&amp; ported to Hugo by <a href="https://github.com/kishaningithub">Kishan B</a>
+<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s2"><br>
+</span></p>
+<table cellspacing="0" cellpadding="0" class="t1">
+  <tbody>
+    <tr>
+      <td valign="top" class="td1">
+        <p class="p5"><span class="s2"></span><br></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p6"><span class="s2"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p7"><span class="s2"></span><br></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p6"><span class="s2"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p7"><span class="s2"></span><br></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p6"><span class="s2"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p5"><span class="s2"></span><br></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p class="p8"><span class="s2"><br>
+</span></p>
+<ul class="ul2">
+  <li class="li9"><span class="s5"><br>
+</span></li>
+</ul>
+</body>
+</html>
+
+              
+<div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
+  <div class="small-navbar visible-xs">
+  <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
+  <h1 class="small-navbar-heading"><a href="/">raven mcknight</a></h1>
+</div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="content-column-content">
+         <h1>New Spatial Bayesian Models</h1>
+         
+
+
+<p>Last week, I fit an initial CARBayes model which identifies boundaries between counties in Tennessee. This week, I’ll explore some new models and decide which one(s) to present (and whether I want to fit the model to the entire country!).</p>
+<div id="back-up-a-second" class="section level2">
+<h2>Back up a second</h2>
+<p>I’ve never actually tested to see if there is spatial autocorrelation in my data! I think we can <em>see</em> that there is, but we can check with Moran’s I to make sure we need to use spatial models.</p>
+<pre class="r"><code>W.nb &lt;- poly2nb(tn.spatial, row.names=rownames(tn.spatial))   # Create neighborhood matrix
+W.list &lt;- nb2listw(W.nb, style=&quot;B&quot;)
+W &lt;- nb2mat(W.nb, style=&quot;B&quot;)   # We&#39;ll need this W for our models below, as well!
+
+moran.mc(tn.spatial$WomenPerClinic, W.list, nsim = 9999) # mc simulations</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  tn.spatial$WomenPerClinic 
+## weights: W.list  
+## number of simulations + 1: 10000 
+## 
+## statistic = 0.054021, observed rank = 8558, p-value = 0.1442
+## alternative hypothesis: greater</code></pre>
+<p>This is kind of surprising! My Moran’s I test tells me that the Tennessee data <em>might</em> be spatially random. With <code>observed rank = 8569</code>, we know that out of 10000 samples, my data is “less random” than about 8500 of them. I’ll try Moran’s I on the entire country to see if Tennessee is a strange case or if my data really is random.</p>
+<pre class="r"><code>st_rook = function(a, b=a) {st_relate(a, b, pattern = &quot;F***1****&quot;)}
+
+bc.sp.clean &lt;- bc.spatial %&gt;%    # takes a long time, try not to run again
+  mutate(WomenPerClinicClean = replace_na(WomenPerClinic, 0)) %&gt;%
+  mutate(NB_ROOK = st_rook(.))</code></pre>
+<pre><code>## although coordinates are longitude/latitude, st_relate_pattern assumes that they are planar</code></pre>
+<pre class="r"><code>for(i in 1:nrow(bc.sp.clean)){
+  bc.sp.clean$nb_length[i] &lt;- length(bc.sp.clean$NB_ROOK[[i]])
+}
+
+bc.sp.clean &lt;- bc.sp.clean %&gt;%
+  dplyr::select(-NB_ROOK) %&gt;%
+  filter(nb_length &gt; 0) 
+
+us.nb &lt;- poly2nb(bc.sp.clean)
+
+us.list &lt;- nb2listw(us.nb, style=&quot;B&quot;)   
+
+moran.mc(bc.sp.clean$WomenPerClinicClean, us.list, nsim=9999)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  bc.sp.clean$WomenPerClinicClean 
+## weights: us.list  
+## number of simulations + 1: 10000 
+## 
+## statistic = 0.24171, observed rank = 10000, p-value = 1e-04
+## alternative hypothesis: greater</code></pre>
+<p>This makes more sense! Over the entire country, we see that our real data is “less random” than any randomly generated data. This means that we’re on the right track to be fitting spatial models.</p>
+</div>
+<div id="new-models" class="section level2">
+<h2>New Models</h2>
+<p>First, I’ll fit a model often used in ecological regression. The goal of this model is to identify factors that affect our response variable–women per clinic. This model is fit using the <code>S.CARleroux</code> function in the <code>CARBayes</code> packages. Like the model from last week, W is a neighborhood matrix. For this model, I’ll include all of my potential covariates to determine which are impactful.</p>
+<pre class="r"><code>form &lt;- WomenPerClinic ~ MedianInc + PercRural + PercHSGrad + PercPoverty + PercWhite
+
+new.spatial.model &lt;- S.CARleroux(formula=form, data=tn.spatial, family=&quot;gaussian&quot;, W=W, burnin=100000, n.sample=300000, thin=20)</code></pre>
+<pre class="r"><code>print(new.spatial.model)</code></pre>
+<pre><code>## 
+## #################
+## #### Model fitted
+## #################
+## Likelihood model - Gaussian (identity link function) 
+## Random effects model - Leroux CAR
+## Regression equation - WomenPerClinic ~ MedianInc + PercRural + PercHSGrad + PercPoverty + 
+##     PercWhite
+## Number of missing observations - 0
+## 
+## ############
+## #### Results
+## ############
+## Posterior quantities and DIC
+## 
+##                   Median        2.5%        97.5% n.sample % accept
+## (Intercept)   -2412.8233  -9429.4220    4564.7543    10000    100.0
+## MedianInc         0.0029     -0.0361       0.0406    10000    100.0
+## PercRural     -2027.6930  -3050.9721    -981.5571    10000    100.0
+## PercHSGrad       82.7422     10.8031     155.7198    10000    100.0
+## PercPoverty   -1687.4149  -9789.1452    6594.8498    10000    100.0
+## PercWhite       -15.6043    -35.4421       4.2383    10000    100.0
+## nu2         1142374.3787 863551.6311 1550886.9802    10000    100.0
+## tau2              0.0085      0.0021       0.0960    10000    100.0
+## rho               0.3973      0.0279       0.9011    10000     45.5
+##             n.effective Geweke.diag
+## (Intercept)     10992.6         0.3
+## MedianInc       10000.0        -1.7
+## PercRural       10000.0         0.2
+## PercHSGrad      10000.0         0.6
+## PercPoverty     10724.8        -1.0
+## PercWhite       10000.0        -1.4
+## nu2             10000.0         0.0
+## tau2             1584.7        -1.3
+## rho              4331.5         0.7
+## 
+## DIC =  1602.508       p.d =  5.562803       LMPL =  -804.75</code></pre>
+<p>These coefficients are a bit strange because Median Income is on a very different scale than the other predictors. Briefly, here’s what we can take away from this model:</p>
+<ul>
+<li>An increase in median income causes an increase in women per clinic – this seemed counterintuitive to me at first, but we do see that wealthier areas tend to be more populous and therefore more likely to have too few clinics.</li>
+<li>An increase in percent rural causes a <em>large</em> decrease in women per clinic – this is where the women per clinic metric starts to run into problems. Lots of those rural counties have 0 or 1 clinic, but can’t be counted as a desert by our metric because there aren’t enough women in need!</li>
+<li>An increase in the proportion of adults with high school diplomas causes an increase in women per clinic. I think this follows the same logic as median income.</li>
+<li>An increase in the proportion of residents living under the poverty line causes a decrease in women per clinic. Same logic as high school graduates!</li>
+<li>An increase in percent white causes a decrease in women per clinic – as we might expect, white communities are better served than non-white ones.</li>
+</ul>
+<p>Out of curiosity, I’ll fit a model using each race (as collected by the census) as predictors to get a sense of which communities are most underserved. We should keep in mind that this model is fit only on Tennesee which isn’t the most diverse state – it might be better to fit this model on the entire country.</p>
+<pre class="r"><code>race.form &lt;- WomenPerClinic ~ PercWhite + PercBlack + PercAmInd + PercAsian + PercHawaii + PercTwoOrMore + PercHisp
+
+race.spatial.model &lt;- S.CARleroux(formula=race.form, data=tn.spatial, family=&quot;gaussian&quot;, W=W, burnin=100000, n.sample=300000, thin=20)</code></pre>
+<pre class="r"><code>print(race.spatial.model)</code></pre>
+<pre><code>## 
+## #################
+## #### Model fitted
+## #################
+## Likelihood model - Gaussian (identity link function) 
+## Random effects model - Leroux CAR
+## Regression equation - WomenPerClinic ~ PercWhite + PercBlack + PercAmInd + PercAsian + 
+##     PercHawaii + PercTwoOrMore + PercHisp
+## Number of missing observations - 0
+## 
+## ############
+## #### Results
+## ############
+## Posterior quantities and DIC
+## 
+##                     Median         2.5%        97.5% n.sample % accept
+## (Intercept)      1093.9321   -2899.6279    5161.2408    10000    100.0
+## PercWhite          -8.8914     -48.8543      31.1042    10000    100.0
+## PercBlack           8.9156     -32.6209      50.1737    10000    100.0
+## PercAmInd         -82.3647   -1071.0484     906.1753    10000    100.0
+## PercAsian         659.9800     290.1950    1029.0094    10000    100.0
+## PercHawaii       3482.1796     697.7742    6352.9485    10000    100.0
+## PercTwoOrMore      27.4689    -103.0273     154.6772    10000    100.0
+## PercHisp          131.9519      25.4279     236.3096    10000    100.0
+## nu2           1413892.8683 1062200.8550 1943819.1476    10000    100.0
+## tau2                0.0083       0.0021       0.0940    10000    100.0
+## rho                 0.4014       0.0260       0.8904    10000     45.4
+##               n.effective Geweke.diag
+## (Intercept)       10000.0        -0.2
+## PercWhite         10000.0         0.2
+## PercBlack         10000.0         0.6
+## PercAmInd         10000.0        -1.2
+## PercAsian         10000.0         0.9
+## PercHawaii         9263.6         0.1
+## PercTwoOrMore      8931.2        -0.5
+## PercHisp          10000.0        -0.2
+## nu2                9369.0        -0.6
+## tau2               1836.2        -0.8
+## rho                4440.1         1.6
+## 
+## DIC =  1624.143       p.d =  7.012646       LMPL =  -815.38</code></pre>
+<p>Our intuitive takeaways from this model:</p>
+<ul>
+<li>White and American Indian are the only groups that cause a <em>decrease</em> in women per clinic – I wonder if the American Indian phenomenon follows the same logic as the rural/high school grad coefficients in the previous model. I don’t think there are that many counties with significant native populations in Tennessee, and I’d guess they are rural, undereducated counties.</li>
+<li>Asian and Hawaiin/Pacific Islander cause the greatest increase in women per clinic.</li>
+</ul>
+<p>I think that these coefficients will change if we fit the model to the entire country, but the signs and intuition will probably stay the same.</p>
+</div>
+<div id="progress-since-last-week" class="section level2">
+<h2>Progress since last week</h2>
+<p>This was my minimal progress week! I fit the models here, read the original papers about S.CARdissimilarity and S.CARleroux, and spent <em>a lot</em> of time unsuccessfully trying to fit models to the entire country. Oh well!</p>
+</div>
+
+         <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "ravenmcknight" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+          </div>
+      </div>
+  </div>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.cookie.js"> </script>
+<script src="/js/ekko-lightbox.js"></script>
+<script src="/js/jquery.scrollTo.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/front.js"></script>
+
+
+
+</body>
+</html>
