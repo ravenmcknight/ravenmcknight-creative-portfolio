@@ -2,8 +2,10 @@
 title: "Spatial Bayesian Models of Contraceptive Deserts"
 author: "Raven McKnight"
 date: "5/10/2019"
+image: img/portfolio/nc_boundaries_thick.png
 output:
-  blogdown:::html_document
+  blogdown:::html_document:
+    mathjax: default
 ---
 
 Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods -- Bayesian and frequentist! -- aren't useful in modelling spatial data. In this series of blog posts, we'll explore Bayesian methods to describe variation across space. 
@@ -115,7 +117,7 @@ This test tells us that our real data is not *the least* random, but it is less 
 
 #### CAR Models 
 
-To handle spatial autocorrelation in our data, we'll fit Conditional Autoregressive (CAR) models using the `CARBayes` package. CAR models are often used to model areal data such as disease risk in epidemiology, ecologocial phenomena, or housing prices. They are most often fit in Bayesian contexts using random effects to model spatial autocorrelation. Hierarchical Bayesian models are particularly helfpul in dealing with the structure of spatial data. I'll fit two types of CAR models below -- one which assumes a global level of smoothness in spatial autocorrelation and one which seeks to identify boundaries or breaks in the response surface. 
+To handle spatial autocorrelation in our data, we'll fit Conditional Autoregressive (CAR) models using the `CARBayes` package. CAR models are often used to model areal data such as disease risk in epidemiology, ecologocial phenomena, or housing prices. They are most often fit in Bayesian contexts using random effects to model spatial autocorrelation. Hierarchical Bayesian models are particularly helfpul in dealing with the structure of spatial data. I'll fit two types of CAR models below -- one which assumes a global level of smoothness in spatial autocorrelation and one which seeks to identify boundaries or breaks in the response surface. More on CAR models and how to implement them coming soon!
 
 
 #### A Familiar Model & Variable Selection
@@ -152,7 +154,7 @@ predictors %>%
     project_theme_plot 
 ```
 
-To better understand these relationships, I'll fit a Leroux model using four of these predictors so we can see which are most "important." For more on models like this, you can check out [Katie's case study](http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/). She fits Besag-York-Mollie (BYM) models which are the precursor to Leroux! I chose to use Leroux rather than BYM because its R implementation is more suited to continuous or Gaussian response variables (vignette, page 4-5). The Leroux model is essentially an extension of the BYM model -- it's main advantage is that it handles *overdispersion* with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with "real-world" spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren't too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects. 
+To better understand these relationships, I'll fit a Leroux model using four of these predictors so we can see which are most "important." For more on models like this, you can check out [Katie's case study](http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/). She fits Besag-York-Mollie (BYM) models which are the precursor to Leroux! The Leroux model is essentially an extension of the BYM model -- it's main advantage is that it handles *overdispersion* with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with "real-world" spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren't too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects. 
 
 ![](/portfolio/contraceptive-deserts-bayes_files/lerouxstatement.png)
 
@@ -163,9 +165,9 @@ The last thing we need to start fitting models is a *neighborhood structure*. Th
 
 ![](/portfolio/contraceptive-deserts-bayes_files/neighborhoods.png)
 
-I decided to leave out percent rural as a predictor because some very rural counties have so few women they can't count as a desert by our metric! This was throwing off the rest of the coefficients; it's more informative to look at this model with fewer predictors. I'm also taking fewer Markov Chain Monte Carlo simulations than I would ideally because these models are computationally expensive and take a *very* long time to run.  
+I decided to leave out percent rural as a predictor because some very rural counties have so few women they can't count as a desert by our metric! This was throwing off the rest of the coefficients; it's more informative to look at this model with fewer predictors. I'm also taking fewer Markov Chain Monte Carlo simulations than I would ideally because these models are computationally expensive and can take a long time to run.  
 
-```{r results = "hide"}
+```{r results = "hide", message=FALSE, warning=FALSE}
 library(CARBayes)
 
 formula <- WomenPerClinic ~ MedianInc + PercHSGrad + PercPoverty + PercWhite   # Our model formula
@@ -200,12 +202,12 @@ To answer my initial question -- can we identify clusters of limited access to b
 
 Generally, CAR models such as BYM or Leroux force a single global level of spatial autocorrelation. The assumption of smoothness is often broken by real-world data which can exhibit local autocorrelation, or clustering. The Lee and Mitchell model I'll fit here deals with local autocorrelation in two ways: first, it allows us to specify covariates as above in the Leroux model. Second, it uses random effects to model local autocorrelation even in the case of unmeasured confounding when we don't know which covariates are causing the variation.
 
-Like the globally-smooth models above, Lee & Mitchell use a neighborhood matrix W. In the Leroux model we fit, W is binary and values are assumed to be fixed at either 0 or 1. The Lee & Mitchell prior attempts to model the values in W as if they were random quantities rather than fixed. It models each entry in W as the *dissimilarity* between polygons. The model takes $q$ non-negative dissimilarity metrics $z$. These metrics are our covariates -- they can be physical characteristics of the polygons (such as proportion of land covered by water) or demographics (such as percent high school grad or median income!). The formal model statement is below. More details can be found in the [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) or the [original paper](https://academic.oup.com/biostatistics/article/13/3/415/248273). Note there is also a non-binary option which can be specified by setting `W.binary = FALSE` below. 
+Like the globally-smooth models above, Lee & Mitchell use a neighborhood matrix W. In the Leroux model we fit, W is binary and values are assumed to be fixed at either 0 or 1. The Lee & Mitchell prior attempts to model the values in W as if they were random quantities rather than fixed. It models each entry in W as the *dissimilarity* between polygons. The model takes q non-negative dissimilarity metrics z. These metrics are our covariates -- they can be physical characteristics of the polygons (such as proportion of land covered by water) or demographics (such as percent high school grad or median income!). The formal model statement is below. More details can be found in the [vignette](https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf) or the [original paper](https://academic.oup.com/biostatistics/article/13/3/415/248273). Note there is also a non-binary option which can be specified by setting `W.binary = FALSE` below. 
 
 ![](/portfolio/contraceptive-deserts-bayes_files/leemitchellstatement.png)
 
 
-Without getting too bogged down in the details, this model essentially says that the entries in neighborhood matrix $W$ are 1 if a dissimilarity metric $z$ is different enough in areal units $k$ and $j$. The $\alpha$ priors are given uniform distributions with varying $M_i$ values to ensure priors are vague. 
+Without getting too bogged down in the details, this model essentially says that the entries in neighborhood matrix W are 1 if a dissimilarity metric z is different enough in areal units k and j. The priors are given uniform distributions with varying maxiumum values to ensure priors are vague. 
 ```{r include = FALSE}
 # if we get mathjax working, rewrite with proper notation (same for model statements)
 ```
@@ -228,7 +230,7 @@ formula <- WomenPerClinic ~ 1
 nc_dissimilarity <- S.CARdissimilarity(formula=formula, data=nc_sp_mod, family="gaussian", W=W, Z=list(Z.inc=Z.inc, Z.grad=Z.grad), W.binary=TRUE, burnin=10000, n.sample=30000, thin=20)
 ```
 
-```{r eval=FALSE}
+```{r}
 print(nc_dissimilarity)
 ```
 
@@ -237,7 +239,7 @@ Our intuitive takeaways from this output:
 
 * The average number of women per clinic is about 1700
 * Income and high school graduates are both correlated with slightly higher values of women per clinic
-* `alpha.min` is the threshold for the dissimilarity metrics, ie a value lower than `alpha.min` will trigger boundary identification. The `alpha.min` values here tell us that percent high school grad is slightly more important than median income, though the median income value is likely so low because median income has much higher values than percent high school grad. 
+* `alpha.min` is the threshold for the dissimilarity metrics, ie a value higher than `alpha.min` will trigger boundary identification. The `alpha.min` values here tell us that percent high school grad is slightly more important than median income, though the median income value is likely so low because median income has much higher values than percent high school grad. 
 * Because our coverage intervals are greater than or equal to the `alpha.min` values, we know that both of our covariates helped identify some boundaries
 * We identified 111 step changes, or breaks between adjacent counties
 
@@ -264,6 +266,7 @@ ggplot() +
 ```
 
 
+I'm very happy with these results! We can see that Wake County, where Raleigh is, is almost entirely enclosed. This makes sense as it's the most urban county in the area -- we should expect health care services to be different in a metropolitan area than elsewhere. Similar boundaries have been located around Guilford County, home to another metro area (Winston-Salem), and in Western North Carolina (where I'm from!).
 
 #### Bonus: Interactive Results!
 Just for fun, we can also visualize these results interactively using leaflet!
@@ -322,9 +325,9 @@ results_map
 
 ### Conclusions
 
-CARBayes gives us some great tools to start modelling accessibility! We were able to identify some potential covariates and start locating boundaries between clusters! One major limitation of this implementation is the the model locates boundaries as points which makes it difficult to identify closed clusters. There is no simple way to extract the identified clusters, so our analysis sort of ends with visualization. This works well for a single state but would be overwhelming, I think, on the entire country. 
+CARBayes gives us some great tools to start modelling accessibility! We were able to identify some potential covariates and start locating boundaries between clusters! One major limitation of this implementation is that the model locates boundaries as points rather than lines or polygons which makes it difficult to identify closed clusters. There is no simple way to extract the identified clusters, so our analysis sort of ends with visualization. This works well for a single state but would be overwhelming, I think, on the entire country. 
 
-There is a lot of exciting future work for this project. There are many other CAR methods we could apply, and tons of covariates we haven't considered yet! As I mentioned in the beginning of this post, the accessibility metric we're using is very simple. A more thorough metric could give us a very different picture of accessibility!
+There is a lot of exciting future work for this project. There are many other CAR prior we could apply, and dozens of covariates we haven't considered yet! As I mentioned in the beginning of this post, the accessibility metric we're using is very simple. A more thorough metric could give us a very different picture of accessibility!
 
 For more case studies, check out [Son's post on public transit](https://sonphan.netlify.com/post/transit-bayes/) or [Katie's post on vaccination in California](http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/)!
 

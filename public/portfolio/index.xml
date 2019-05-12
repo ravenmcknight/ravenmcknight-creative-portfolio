@@ -6,9 +6,21 @@
     <description>Recent content in Portfolios on raven mcknight</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <lastBuildDate>Sat, 11 May 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/portfolio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Contraceptive Deserts Cartography</title>
+      <link>/portfolio/contraceptive-deserts-cartography/</link>
+      <pubDate>Sat, 11 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/portfolio/contraceptive-deserts-cartography/</guid>
+      <description>Here&amp;rsquo;s another look at the data I used for my post on spatial Bayesian models! I made this value-by-alpha, or bivariate choropleth, map for my final map design project in Intro to Geographic Information Systems. Click the map to make it larger!
+
+The idea of value-by-alpha is to replace a cartogram with variations in color rather than shape/size. These maps can be a little hard to interpret, but it was a fun design project and a neat way of looking at my data from a different perspective!</description>
+    </item>
     
     <item>
       <title>Spatial Bayesian Models of Contraceptive Deserts</title>
