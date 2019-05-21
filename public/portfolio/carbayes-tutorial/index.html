@@ -8,14 +8,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
-<link rel="stylesheet" href="/css/font-awesome.min.css">
-<link rel="stylesheet" href="/css/owl.carousel.css">
-<link rel="stylesheet" href="/css/owl.theme.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../css/owl.carousel.css">
+<link rel="stylesheet" href="../../css/owl.theme.css">
 
 
-  <link href="/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
+  <link href="../../css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
 
  
 
@@ -27,8 +27,8 @@
   
 
 
-<link href="/css/custom.css" rel="stylesheet">
-<link rel="shortcut icon" href="/img/favicon.png">
+<link href="../../css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="../../img/favicon.png">
 
 
 <script type="application/javascript">
@@ -50,17 +50,17 @@ if (!doNotTrack) {
           <div class="row row-offcanvas row-offcanvas-left">
               <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
   <div class="sidebar-content">
-    <h1 class="sidebar-heading"><a href="/">raven mcknight</a></h1>
+    <h1 class="sidebar-heading"><a href="../../">raven mcknight</a></h1>
     
       <p class="sidebar-p">stats! data science! visualization!</p>
     
     <ul class="sidebar-menu">
       
-        <li><a href="/portfolio/">Home</a></li>
+        <li><a href="../../portfolio/">Home</a></li>
       
-        <li><a href="/about/">About</a></li>
+        <li><a href="../../about/">About</a></li>
       
-        <li><a href="/contact/">Get in touch</a></li>
+        <li><a href="../../contact/">Get in touch</a></li>
       
     </ul>
     <p class="social">
@@ -107,7 +107,7 @@ if (!doNotTrack) {
 <div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
   <div class="small-navbar visible-xs">
   <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
-  <h1 class="small-navbar-heading"><a href="/">raven mcknight</a></h1>
+  <h1 class="small-navbar-heading"><a href="../../">raven mcknight</a></h1>
 </div>
 
   <div class="row">
@@ -127,7 +127,7 @@ if (!doNotTrack) {
 <p>Spatial data is everywhere. It can describe geography, demographics, epidemiology, and more. In fact, a lot of data we don’t always think of as spatial, such as voting records, can also be understood as describing variation across space. Unfortunately, spatial data breaks one of the fundamental assumptions of statistics–that individual observations are independent from one another.</p>
 <p>We know that spatial data isn’t independent intuitively: the price of housing or risk of contracting a disease in one county, for example, is likely related to the county next door. This understanding of spatial data allows us to borrow strength from neighbors in our analysis. If we’re missing data for a county, we can make some inference about the data we’re missing based on the counties around it. To appropriately model spatial data, we need to take this <em>spatial autocorrelation</em> into account. Spatial autocorrelation is generally represented as a value between -1 and 1, where 1 represents clustering and -1 represents dispersion.</p>
 <div class="figure">
-<img src="/portfolio/CARBayes-tutorial_files/spat_cor.png" />
+<img src="../../portfolio/CARBayes-tutorial_files/spat_cor.png" />
 
 </div>
 <p>In this tutorial, we’ll use the hierarchical nature of spatial data to our advantage. Hierarchical data is data with some underlying structure. Common examples of hierarchical data are longitudinal data, were we have multiple observations on multiple subjects over time, or in our case, spatial data, where data inherits the spatial structure of geography.</p>
@@ -136,7 +136,7 @@ if (!doNotTrack) {
 <h1>Bayesian Methods</h1>
 <p>The methods we’ll use in this tutorial are drawn from Bayesian Statistics, which allow us to incorporate prior understanding of our data into our models. The idea of Bayesian methods is to reach a balance between our prior understandings and incoming information in the form of data. For more on Bayes, check out <a href="https://www.analyticsvidhya.com/blog/2016/06/bayesian-statistics-beginners-simple-english/">this article!</a> <span class="citation">(Nss 2019)</span></p>
 <div class="figure">
-<img src="/portfolio/CARBayes-tutorial_files/bayes_diagram.jpg" />
+<img src="../../portfolio/CARBayes-tutorial_files/bayes_diagram.jpg" />
 
 </div>
 <p>Bayesian methods are particularly suited to modelling hierarchical data because we can account for the hierarchy using our priors. For example, a simple hierarchical model might say that the percent of a county who voted for Trump in the 2016 election is centered around a different mean value for each state (top layer of the model) and the mean value for each state is based on some other parameters, such as median income (priors).</p>
@@ -236,13 +236,13 @@ ggplot(columbus) +
   map_theme +
   map_colors +
   labs(title = &quot;Median home values in Columbus, OH neighborhoods, 1980&quot;, fill = &quot;Home value in 1,000s&quot;)</code></pre>
-<p><img src="/portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="../../portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(columbus) +
   geom_sf(aes(fill = CRIME)) +
   map_theme +
   map_colors +
   labs(title = &quot;Residential crime in Columbus, OH neighborhoods, 1980&quot;, fill = &quot;Residential burglaries and vehicle \nthefts per thousand households&quot;)</code></pre>
-<p><img src="/portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<p><img src="../../portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 <p>In these maps we can see two different important characteristics. First, it looks like there is spatial clustering for each of the variables individually. We will quantify this with Moran’s I. Second, we see an inverse relationship between these two variables. In context, this means that high home values and low residential crime rates are often found in the same neighborhood.</p>
 <p>Before fitting a model, we will test the degree of spatial correlation with Moran’s I. A priori we can see that the pattern is likely clustering rather than dispersion, so we’ll conduct a one-tailed hypothesis test to see if the clustering is greater than random.</p>
 <p><span class="math display">\[H_O: \text{no spatial clustering} \\
@@ -319,7 +319,7 @@ ggplot(cbus_sim, aes(x = beta_crime)) +
   theme_minimal() +
   theme(text = element_text(color = &quot;#60717a&quot;)) +
   labs(title = &quot;Posterior distribution of the crime coefficient&quot;, x = &quot;Beta&quot;, y = &quot;Density&quot;)</code></pre>
-<p><img src="/portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="../../portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>This is a good visual representation of the credible interval; we can see that our coefficient will almost never be 0!</p>
 </div>
 <div id="evaluating-the-spatial-pattern-of-residuals" class="section level2">
@@ -343,7 +343,7 @@ ggplot(cbus_sim, aes(x = beta_crime)) +
   map_theme +
   map_colors +
   labs(title = &quot;Residuals from the CAR model&quot;, subtitle = &quot;home value ~ crime&quot;, fill = &quot;Residual&quot;)</code></pre>
-<p><img src="/portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="../../portfolio/CARBayes-tutorial_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>In order to choose our next covariate, we can start by thinking about what kinds of variables might explain this pattern in the residual. One idea might be to include distance to the Central Business District!</p>
 </div>
 </div>
@@ -410,15 +410,15 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
           </div>
       </div>
   </div>
-  <script src="/js/jquery.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.cookie.js"> </script>
-<script src="/js/ekko-lightbox.js"></script>
-<script src="/js/jquery.scrollTo.min.js"></script>
-<script src="/js/masonry.pkgd.min.js"></script>
-<script src="/js/imagesloaded.pkgd.min.js"></script>
-<script src="/js/owl.carousel.min.js"></script>
-<script src="/js/front.js"></script>
+  <script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/jquery.cookie.js"> </script>
+<script src="../../js/ekko-lightbox.js"></script>
+<script src="../../js/jquery.scrollTo.min.js"></script>
+<script src="../../js/masonry.pkgd.min.js"></script>
+<script src="../../js/imagesloaded.pkgd.min.js"></script>
+<script src="../../js/owl.carousel.min.js"></script>
+<script src="../../js/front.js"></script>
 
 
 
@@ -428,12 +428,12 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
     window.initializeCodeFolding("show" === "show");
   });
   </script>
-  <script src="/js/codefolding.js"></script>
+  <script src="../../js/codefolding.js"></script>
 
   
-  <script src="/js/collapse.js"></script>
-  <script src="/js/dropdown.js"></script>
-  <script src="/js/transition.js"></script>
+  <script src="../../js/collapse.js"></script>
+  <script src="../../js/dropdown.js"></script>
+  <script src="../../js/transition.js"></script>
 
   <script src="//yihui.name/js/math-code.js"></script>
 <script async
