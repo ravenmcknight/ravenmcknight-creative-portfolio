@@ -8,14 +8,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://ravenmcknight.com/css/bootstrap.min.css">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
-<link rel="stylesheet" href="/css/font-awesome.min.css">
-<link rel="stylesheet" href="/css/owl.carousel.css">
-<link rel="stylesheet" href="/css/owl.theme.css">
+<link rel="stylesheet" href="https://ravenmcknight.com/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://ravenmcknight.com/css/owl.carousel.css">
+<link rel="stylesheet" href="https://ravenmcknight.com/css/owl.theme.css">
 
 
-  <link href="/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
+  <link href="https://ravenmcknight.com/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
 
  
 
@@ -27,8 +27,8 @@
   
 
 
-<link href="/css/custom.css" rel="stylesheet">
-<link rel="shortcut icon" href="/img/favicon.png">
+<link href="https://ravenmcknight.com/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="https://ravenmcknight.com/img/favicon.png">
 
 
 <script type="application/javascript">
@@ -50,17 +50,17 @@ if (!doNotTrack) {
           <div class="row row-offcanvas row-offcanvas-left">
               <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
   <div class="sidebar-content">
-    <h1 class="sidebar-heading"><a href="/">raven mcknight</a></h1>
+    <h1 class="sidebar-heading"><a href="https://ravenmcknight.com/">raven mcknight</a></h1>
     
       <p class="sidebar-p">stats! data science! visualization!</p>
     
     <ul class="sidebar-menu">
       
-        <li><a href="/portfolio/">Home</a></li>
+        <li><a href="https://ravenmcknight.com/portfolio/">Home</a></li>
       
-        <li><a href="/about/">About</a></li>
+        <li><a href="https://ravenmcknight.com/about/">About</a></li>
       
-        <li><a href="/contact/">Get in touch</a></li>
+        <li><a href="https://ravenmcknight.com/contact/">Get in touch</a></li>
       
     </ul>
     <p class="social">
@@ -107,7 +107,7 @@ if (!doNotTrack) {
 <div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
   <div class="small-navbar visible-xs">
   <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
-  <h1 class="small-navbar-heading"><a href="/">raven mcknight</a></h1>
+  <h1 class="small-navbar-heading"><a href="https://ravenmcknight.com/">raven mcknight</a></h1>
 </div>
 
   <div class="row">
@@ -260,7 +260,7 @@ moran.mc(col_sp$HOVAL, listw = col_listw, nsim = 999, alternative = &quot;greate
 ## weights: col_listw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.22134, observed rank = 994, p-value = 0.006
+## statistic = 0.22134, observed rank = 993, p-value = 0.007
 ## alternative hypothesis: greater</code></pre>
 <p>For home value, our test statistic is 0.22134 (moderate positive correlation) and based on our Monte Carlo simulations of possible random patterns we have a p-value of 0.008. We reject the null hypothesis because there is substantial evidence of spatial clustering. Now we will repeat this process for crime. If both of these show evidence of clustering then we know we should use spatial models.</p>
 <pre class="r"><code>moran.mc(col_sp$CRIME, listw = col_listw, nsim = 999, alternative = &quot;greater&quot;) # moran&#39;s I test CRIME</code></pre>
@@ -294,19 +294,19 @@ moran.mc(col_sp$HOVAL, listw = col_listw, nsim = 999, alternative = &quot;greate
 ## Posterior quantities and DIC
 ## 
 ##               Median     2.5%    97.5% n.sample % accept n.effective
-## (Intercept)  60.5945  50.7950  70.7217     8000    100.0      8000.0
-## CRIME        -0.6318  -0.8861  -0.3790     8000    100.0      8000.0
-## nu2         226.7139 156.2491 344.1378     8000    100.0      8000.0
-## tau2          0.0085   0.0021   0.0918     8000    100.0      1161.2
-## rho           0.3991   0.0255   0.9069     8000     46.7      3745.1
+## (Intercept)  60.6714  50.7782  70.7475     8000    100.0      8000.0
+## CRIME        -0.6358  -0.8938  -0.3814     8000    100.0      8000.0
+## nu2         227.0353 155.2025 346.9836     8000    100.0      8000.0
+## tau2          0.0080   0.0021   0.0744     8000    100.0      1395.1
+## rho           0.3981   0.0241   0.9053     8000     46.5      3789.4
 ##             Geweke.diag
-## (Intercept)        -0.2
-## CRIME               0.3
-## nu2                 0.6
-## tau2               -0.9
-## rho                -0.9
+## (Intercept)         0.0
+## CRIME              -0.1
+## nu2                -1.3
+## tau2               -1.9
+## rho                 0.8
 ## 
-## DIC =  410.1558       p.d =  2.96814       LMPL =  -205.98</code></pre>
+## DIC =  410.1978       p.d =  2.988234       LMPL =  -206.16</code></pre>
 <p>In a Bayesian analysis we are simulating values from the posterior distribution of our parameters. If the middle 95% of distribution (the credible interval) does not cross zero then we can say it is a significant predictor. In this case we are looking at the <code>CRIME</code> parameter and we can see that the credible interval is below 0, meaning there is a significant negative or inverse relationship between crime and home value. The median value of the posterior distribution for <code>CRIME</code> is -0.715, meaning that for every crime recorded in that neighborhood the home value (in thousands) decreases by 0.715. Contextually, this makes sense. If we wanted to compare this model to others, we would use the DIC value, which is 97.4. We would select the model with the lower DIC, but this method is only applicable when the posterior distribution is approximately multivariate normal.</p>
 <p>We can extract all of the simulated <span class="math inline">\(\beta_\text{crime}\)</span> coefficients and plot them to see the distribution.</p>
 <pre class="r"><code>cbus_sim &lt;- data_frame(beta_crime = as.vector(model.hoval$samples$beta[,2]))
@@ -333,7 +333,7 @@ ggplot(cbus_sim, aes(x = beta_crime)) +
 ## weights: col_listw  
 ## number of simulations + 1: 10000 
 ## 
-## statistic = 0.17121, observed rank = 9802, p-value = 0.0198
+## statistic = 0.17151, observed rank = 9818, p-value = 0.0182
 ## alternative hypothesis: greater</code></pre>
 <p>In this example we do see slight clustering in our residuals (I = 0.17), but that is likely because we only used one covariate to describe home patterns. In later iterations we would include more covariates in the model. We can also map the residuals to see where these clusters appear.</p>
 <pre class="r"><code>columbus %&gt;%
@@ -401,15 +401,15 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
           </div>
       </div>
   </div>
-  <script src="/js/jquery.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.cookie.js"> </script>
-<script src="/js/ekko-lightbox.js"></script>
-<script src="/js/jquery.scrollTo.min.js"></script>
-<script src="/js/masonry.pkgd.min.js"></script>
-<script src="/js/imagesloaded.pkgd.min.js"></script>
-<script src="/js/owl.carousel.min.js"></script>
-<script src="/js/front.js"></script>
+  <script src="https://ravenmcknight.com/js/jquery.min.js"></script>
+<script src="https://ravenmcknight.com/js/bootstrap.min.js"></script>
+<script src="https://ravenmcknight.com/js/jquery.cookie.js"> </script>
+<script src="https://ravenmcknight.com/js/ekko-lightbox.js"></script>
+<script src="https://ravenmcknight.com/js/jquery.scrollTo.min.js"></script>
+<script src="https://ravenmcknight.com/js/masonry.pkgd.min.js"></script>
+<script src="https://ravenmcknight.com/js/imagesloaded.pkgd.min.js"></script>
+<script src="https://ravenmcknight.com/js/owl.carousel.min.js"></script>
+<script src="https://ravenmcknight.com/js/front.js"></script>
 
 
 
