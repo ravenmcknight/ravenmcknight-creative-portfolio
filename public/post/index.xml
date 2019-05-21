@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on raven mcknight</title>
-    <link>https://ravenmcknight.com/post/</link>
+    <link>/post/</link>
     <description>Recent content in Posts on raven mcknight</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 11 May 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ravenmcknight.com/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Contraceptive Deserts Cartography</title>
-      <link>https://ravenmcknight.com/post/contraceptive-deserts-cartography/</link>
+      <link>/post/contraceptive-deserts-cartography/</link>
       <pubDate>Sat, 11 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ravenmcknight.com/post/contraceptive-deserts-cartography/</guid>
+      <guid>/post/contraceptive-deserts-cartography/</guid>
       <description>Here&amp;rsquo;s another look at the data I used for my post on spatial Bayesian models! I made this value-by-alpha, or bivariate choropleth, map for my final map design project in Intro to Geographic Information Systems.
 I followed the work (and color schemes!) of Joshua Stevens. His tutorial uses QGIS but the same methods can be implemented easily in ArcMap.</description>
     </item>

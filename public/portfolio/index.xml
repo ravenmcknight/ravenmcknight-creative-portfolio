@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Portfolios on raven mcknight</title>
-    <link>https://ravenmcknight.com/portfolio/</link>
+    <link>/portfolio/</link>
     <description>Recent content in Portfolios on raven mcknight</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 11 May 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ravenmcknight.com/portfolio/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/portfolio/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Contraceptive Deserts Cartography</title>
-      <link>https://ravenmcknight.com/portfolio/contraceptive-deserts-cartography/</link>
+      <link>/portfolio/contraceptive-deserts-cartography/</link>
       <pubDate>Sat, 11 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ravenmcknight.com/portfolio/contraceptive-deserts-cartography/</guid>
+      <guid>/portfolio/contraceptive-deserts-cartography/</guid>
       <description>Here&amp;rsquo;s another look at the data I used for my post on spatial Bayesian models! I made this value-by-alpha, or bivariate choropleth, map for my final map design project in Intro to Geographic Information Systems. Click the map to make it larger!
 
 The idea of value-by-alpha is to replace a cartogram with variations in color rather than shape/size. These maps can be a little hard to interpret, but it was a fun design project and a neat way of looking at my data from a different perspective!</description>
@@ -24,20 +24,20 @@ The idea of value-by-alpha is to replace a cartogram with variations in color ra
     
     <item>
       <title>CARBayes Tutorial</title>
-      <link>https://ravenmcknight.com/portfolio/carbayes-tutorial/</link>
+      <link>/portfolio/carbayes-tutorial/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://ravenmcknight.com/portfolio/carbayes-tutorial/</guid>
+      <guid>/portfolio/carbayes-tutorial/</guid>
       <description>Note: This tutorial is closely related to my post on modelling birth control access using CARBayes. It was also written in collaboration with Katie Jolly! Here, we’ll help walk you through how to start an analysis of spatial data using the CARBayes package.
 Introduction to spatial data Spatial data is everywhere. It can describe geography, demographics, epidemiology, and more. In fact, a lot of data we don’t always think of as spatial, such as voting records, can also be understood as describing variation across space.</description>
     </item>
     
     <item>
       <title>Spatial Bayesian Models of Contraceptive Deserts</title>
-      <link>https://ravenmcknight.com/portfolio/contraceptive-deserts-bayes/</link>
+      <link>/portfolio/contraceptive-deserts-bayes/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://ravenmcknight.com/portfolio/contraceptive-deserts-bayes/</guid>
+      <guid>/portfolio/contraceptive-deserts-bayes/</guid>
       <description>Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods – Bayesian and frequentist! – aren’t useful in modelling spatial data. In this series of blog posts, Katie Jolly, Son Phan, and I will explore Bayesian methods to describe variation across space.
 Case study: Contracpetive Deserts Birth control is a critical aspect of basic health care.</description>
     </item>
