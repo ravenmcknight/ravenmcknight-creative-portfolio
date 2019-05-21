@@ -33,6 +33,16 @@ I followed the work (and color schemes!) of Joshua Stevens. His tutorial uses QG
     </item>
     
     <item>
+      <title>CARBayes Tutorial</title>
+      <link>/carbayes-tutorial/</link>
+      <pubDate>Thu, 02 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/carbayes-tutorial/</guid>
+      <description>Note: This tutorial is closely related to my post on modelling birth control access using CARBayes. It was also written in collaboration with Katie Jolly! Here, we’ll help walk you through how to start an analysis of spatial data using the CARBayes package.
+Introduction to spatial data Spatial data is everywhere. It can describe geography, demographics, epidemiology, and more. In fact, a lot of data we don’t always think of as spatial, such as voting records, can also be understood as describing variation across space.</description>
+    </item>
+    
+    <item>
       <title>A First Spatial Bayesian Model</title>
       <link>/bayes_progress/first-spatial-bayesian-model/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

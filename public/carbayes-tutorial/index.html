@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>CARBayes Tutorial</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/owl.carousel.css">
+<link rel="stylesheet" href="/css/owl.theme.css">
+
+
+  <link href="/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
+
+ 
+
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+<link href="/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="/img/favicon.png">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-138632608-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</head>
+<body>
+  <div id="all">
+      <div class="container-fluid">
+          <div class="row row-offcanvas row-offcanvas-left">
+              <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
+  <div class="sidebar-content">
+    <h1 class="sidebar-heading"><a href="/">raven mcknight</a></h1>
+    
+      <p class="sidebar-p">stats! data science! visualization!</p>
+    
+    <ul class="sidebar-menu">
+      
+        <li><a href="/portfolio/">Home</a></li>
+      
+        <li><a href="/about/">About</a></li>
+      
+        <li><a href="/contact/">Get in touch</a></li>
+      
+    </ul>
+    <p class="social">
+  
+  
+  
+  
+  
+  <a href="mailto:raven.i.mcknight@gmail.com" data-animate-hover="pulse" class="email">
+    <i class="fa fa-envelope"></i>
+  </a>
+  
+  
+  <a href="https://www.linkedin.com/in/raven-mcknight-0703a5175/" data-animate-hover="pulse" class="external">
+    <i class="fa fa-linkedin"></i>
+  </a>
+  
+  
+  
+  <a href="https://github.com/" data-animate-hover="pulse" class="external">
+    <i class="fa fa-github"></i>
+  </a>
+  
+  
+  
+</p>
+
+
+    <div class="copyright">
+      <p class="credit">
+        
+          &copy;2019 Raven McKnight
+        
+        | Template by <a href="https://bootstrapious.com/free-templates" class="external">Bootstrapious.com</a>
+
+&amp; ported to Hugo by <a href="https://github.com/kishaningithub">Kishan B</a>
+
+      </p>
+    </div>
+  </div>
+</div>
+
+              
+
+<div id="code-folding-buttons" class="btn-group pull-right">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast="">
+    <span>code</span> 
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" style="min-width: 50px;">
+  <li><a id="rmd-show-all-code" href="#">show all code</a>
+  </li><li><a id="rmd-hide-all-code" href="#">hide all code</a></li>
+  </ul>
+</div>
+
+<div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
+  <div class="small-navbar visible-xs">
+  <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
+  <h1 class="small-navbar-heading"><a href="/">raven mcknight</a></h1>
+</div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="content-column-content">
+         <h1>CARBayes Tutorial</h1>
+         
+
+
+<p><strong>Note:</strong> This tutorial is closely related to <a href="https://www.ravenmcknight.com/portfolio/contraceptive-deserts-bayes/">my post</a> on modelling birth control access using CARBayes. It was also written in collaboration with <a href="https://www.katiejolly.io/portfolio/">Katie Jolly</a>! Here, we’ll help walk you through how to start an analysis of spatial data using the CARBayes package.</p>
+<div id="introduction-to-spatial-data" class="section level1">
+<h1>Introduction to spatial data</h1>
+<p>Spatial data is everywhere. It can describe geography, demographics, epidemiology, and more. In fact, a lot of data we don’t always think of as spatial, such as voting records, can also be understood as describing variation across space. Unfortunately, spatial data breaks one of the fundamental assumptions of statistics–that individual observations are independent from one another.</p>
+<p>We know that spatial data isn’t independent intuitively: the price of housing or risk of contracting a disease in one county, for example, is likely related to the county next door. This understanding of spatial data allows us to borrow strength from neighbors in our analysis. If we’re missing data for a county, we can make some inference about the data we’re missing based on the counties around it. To appropriately model spatial data, we need to take this <em>spatial autocorrelation</em> into account. Spatial autocorrelation is generally represented as a value between -1 and 1, where 1 represents clustering and -1 represents dispersion.</p>
+<div class="figure">
+<img src="/portfolio/CARBayes-tutorial_files/spat_cor.png" />
+
+</div>
+<p>In this tutorial, we’ll use the hierarchical nature of spatial data to our advantage. Hierarchical data is data with some underlying structure. Common examples of hierarchical data are longitudinal data, were we have multiple observations on multiple subjects over time, or in our case, spatial data, where data inherits the spatial structure of geography.</p>
+</div>
+<div id="bayesian-methods" class="section level1">
+<h1>Bayesian Methods</h1>
+<p>The methods we’ll use in this tutorial are drawn from Bayesian Statistics, which allow us to incorporate prior understanding of our data into our models. The idea of Bayesian methods is to reach a balance between our prior understandings and incoming information in the form of data. For more on Bayes, check out <a href="https://www.analyticsvidhya.com/blog/2016/06/bayesian-statistics-beginners-simple-english/">this article!</a> <span class="citation">[@nss_2019]</span></p>
+<div class="figure">
+<img src="/portfolio/CARBayes-tutorial_files/bayes_diagram.jpg" />
+
+</div>
+<p>Bayesian methods are particularly suited to modelling hierarchical data because we can account for the hierarchy using our priors. For example, a simple hierarchical model might say that the percent of a county who voted for Trump in the 2016 election is centered around a different mean value for each state (top layer of the model) and the mean value for each state is based on some other parameters, such as median income (priors).</p>
+</div>
+<div id="conditional-autoregressive-models" class="section level1">
+<h1>Conditional autoregressive models</h1>
+<p>In this tutorial, we’ll fit conditional autoregressive (CAR) models. These are Bayesian models used to describe data in non-overlapping areal units, such as counties or states. CAR models are often used to model things like disease rates or ecological phenomena, but they can also be used to model housing prices, for example. If <span class="math inline">\(Y_i\)</span> is the response for area <span class="math inline">\(i\)</span> and <span class="math inline">\(x_i\)</span> is a set of covariates or characteristics in the <span class="math inline">\(i\)</span>th area, the formal model statement is as follows:</p>
+<p><span class="math display">\[E(Y_i |  Y_j, j\not= i) = x_i^T\beta + \sum^n_{j=1}c_{ij}(Y_j - x^T_j\beta) \\
+\\Var(Y_i |  Y_j, j\not= i) = \tau^2_i = \tau^2/w_{i.}\]</span></p>
+<p>where <span class="math inline">\(w_{i.} = \sum^n_{j=1}w_{ij}\)</span>, <span class="math inline">\(c_{ij}\)</span> is nonzero only if <span class="math inline">\(Y_j \in N_i\)</span>, and <span class="math inline">\(N_i\)</span> is the neighborhood of <span class="math inline">\(Y_i\)</span>. <span class="math inline">\(c_{ij}\)</span> is typically <span class="math inline">\(\lambda w_{ij}/w{i}\)</span>.</p>
+<p>In this tutorial, we’ll fit one of the most simple (and flexible) CAR models. This model is a Gaussian Markov random field (GMRF) model proposed by Besag (we’ll refer to it as the Besag model). If you’re familiar with time series models, the most basic GMRF is the AR(1) process. In simple terms, a Gaussian random field is a random function over space with Gaussian probability distributions. A Gaussian <em>Markov</em> random field means that we are only interested in locations one “step” away from our current location – in this context of spatial data, this means that we’re interested in neighbors which directly share a boundary.</p>
+<p>The Besag model generally looks like a random effects model <span class="citation">[@riebler2016intuitive]</span>:</p>
+<p><span class="math display">\[log(\hat Y)=\mu+z_i^T\beta + b_i \\
+\mu = \text{global mean} \\
+z_i\beta_i = \text{vector of covariates &amp; corresponding coefficient} \\
+b_i = \text{spatial random effect}\]</span></p>
+<p>When we define a prior distribution the default is often as follows:</p>
+<p><span class="math display">\[\mu \sim N(0, \frac{1}{100^2}) \\
+\beta \sim N(0, \frac{1}{100^2}) \\
+b_i \sim \text{some spatial dependency model}\]</span></p>
+<p>The Besag model considers <span class="math inline">\(b_i\)</span> to be normally distributed with the mean being a function of the neighboring values, the set <span class="math inline">\(\delta i\)</span> and the variance proportional to the number of neighbors, <span class="math inline">\(n_{\delta i}\)</span>. In notation, it looks like this:</p>
+<p><span class="math display">\[b_i|b_{-i}, \tau_b \sim N(\frac{1}{n_{\delta i}}\sum_{j \in \delta i}b_j, \frac{1}{n_{\delta i} \tau_b}) \\
+\tau_b = \text{precision parameter}\\
+b_{-i} = (b_1, ... b_{i-1}, b_{i+1},...,b_n)^T\]</span></p>
+<p>There are several natural progressions from the Besag model. For more accurate parameter estimates in the case of overdispersion (excessive variance) or unstructured errors (errors with no spatial autocorrelation), we can use the Besag-York-Mollíe model. Further, to account for spatial autocorrelation and overdispersion with two separate parameters, we can use the Leroux model. More information on each of these models can be found <a href="https://arxiv.org/pdf/1601.01180.pdf?fbclid=IwAR3dKo4uDNweY-otyPAMKnBa99RLt7sPMtEi-Kd2UIx8gkcpas6OuZ84jqs">here</a>.</p>
+</div>
+<div id="data-and-packages" class="section level1">
+<h1>Data and packages</h1>
+<p>We’ll fit these models using the <code>CARbayes</code> package in R <span class="citation">[@carbayes]</span>. This package allows us to fit several univariate and multivariate CAR models and make inference in a Bayesian context using Markov chain Monte Carlo (MCMC) simulations. The package supports response variable from Gaussian, multinomial, Poison (or count), and zero-inflated Poisson distributions. Spatial autocorrelation is modeled using random effects in most cases, and each function in the package corresponds to a different prior or model type. Reacall we’ll be using Besag priors, which assume a constant degree of spatial autocorrelation among the observations. The random effects are distributed normally around the mean of the neighbors and the variance is proportional to the size of the neighborhood. There is a lot of potential complexity built into the <code>CARbayes</code> package but for this tutorial, we’ll focus on simple application and interpretation!</p>
+<p>You’ll need the packages below to run this tutorial on your own.</p>
+<pre class="r"><code>#install.packages(&quot;CARbayes&quot;)
+#install.packages(&quot;sf&quot;)
+#install.packages(&quot;tidycensus&quot;)
+#install.packages(&quot;janitor&quot;)
+#install.packages(&quot;tidyverse&quot;)
+#install.packages(&quot;spData&quot;)
+#install.packages(&quot;spdep&quot;)
+library(spData)
+library(CARBayes)
+library(sf)
+library(tidycensus)
+library(janitor)
+library(tidyverse)
+library(spdep)</code></pre>
+<p>We will use a <a href="https://rdrr.io/cran/spData/man/columbus.html">shapefile of Columbus, OH neighborhoods</a> from the <code>spData</code> package <span class="citation">[@spdata]</span>. In total there are 49 neighborhoods and 22 variables and the data is from 1980.</p>
+<pre class="r"><code>columbus &lt;- columbus_sf &lt;- st_read(system.file(&quot;shapes/columbus.shp&quot;, package=&quot;spData&quot;)[1])</code></pre>
+<p>It includes a variety of characteristics about the homes and people in each neighborhood.</p>
+<table style="width:100%;">
+<colgroup>
+<col width="13%" />
+<col width="86%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>NEIG</td>
+<td>neighborhood id value (1-49)</td>
+</tr>
+<tr class="even">
+<td>HOVAL</td>
+<td>median housing value (in $1,000)</td>
+</tr>
+<tr class="odd">
+<td>INC</td>
+<td>household income (in $1,000)</td>
+</tr>
+<tr class="even">
+<td>CRIME</td>
+<td>number of residential burglaries and vehicle thefts per thousand households</td>
+</tr>
+<tr class="odd">
+<td>OPEN</td>
+<td>open space in neighborhood (mi^2)</td>
+</tr>
+<tr class="even">
+<td>PLUMB</td>
+<td>percentage housing units without plumbing</td>
+</tr>
+<tr class="odd">
+<td>DISCBD</td>
+<td>distance to the central business district (miles)</td>
+</tr>
+</tbody>
+</table>
+<p>We will model the relationship between crime <code>CRIME</code> and home value <code>HOVAL</code>. In order to see whether or not spatial models are a necessary complexity, we will do some exploratory data analysis. If we do not see clear spatial patterns, we can use Generalized Linear Models and do not need to account for the spatial autocorrelation.</p>
+<p>The first step in our exploration is to plot maps of our variables of interest.</p>
+<pre class="r"><code>map_theme &lt;- theme_minimal() + theme(text = element_text(color = &quot;#60717a&quot;), panel.grid = element_line(&quot;transparent&quot;), axis.text = element_blank()) 
+map_colors &lt;- scale_fill_gradientn(colors = c(&quot;#FFBD71&quot;, &quot;#FCA464&quot;, &quot;#F87D7B&quot;, &quot;#D04A73&quot;), na.value = &quot;#e1e5e8&quot;)
+
+ggplot(columbus) +
+  geom_sf(aes(fill = HOVAL)) +
+  map_theme +
+  map_colors +
+  labs(title = &quot;Median home values in Columbus, OH neighborhoods, 1980&quot;, fill = &quot;Home value in 1,000s&quot;)</code></pre>
+<p><img src="/carbayes-tutorial_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(columbus) +
+  geom_sf(aes(fill = CRIME)) +
+  map_theme +
+  map_colors +
+  labs(title = &quot;Residential crime in Columbus, OH neighborhoods, 1980&quot;, fill = &quot;Residential burglaries and vehicle \nthefts per thousand households&quot;)</code></pre>
+<p><img src="/carbayes-tutorial_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<p>In these maps we can see two different important characteristics. First, it looks like there is spatial clustering for each of the variables individually. We will quantify this with Moran’s I. Second, we see an inverse relationship between these two variables. In context, this means that high home values and low residential crime rates are often found in the same neighborhood.</p>
+<p>Before fitting a model, we will test the degree of spatial correlation with Moran’s I. A priori we can see that the pattern is likely clustering rather than dispersion, so we’ll conduct a one-tailed hypothesis test to see if the clustering is greater than random.</p>
+<p><span class="math display">\[H_O: \text{no spatial clustering} \\
+H_A: \text{spatial clustering}\]</span></p>
+<pre class="r"><code>col_sp &lt;- as(columbus, &quot;Spatial&quot;)
+col_nb &lt;- poly2nb(col_sp) # queen neighborhood
+col_listw &lt;- nb2listw(col_nb, style = &quot;B&quot;) # listw version of the neighborhood
+W &lt;- nb2mat(col_nb, style = &quot;B&quot;) # binary structure
+
+moran.mc(col_sp$HOVAL, listw = col_listw, nsim = 999, alternative = &quot;greater&quot;) # moran&#39;s I test HOVAL</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  col_sp$HOVAL 
+## weights: col_listw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.22134, observed rank = 995, p-value = 0.005
+## alternative hypothesis: greater</code></pre>
+<p>For home value, our test statistic is 0.22134 (moderate positive correlation) and based on our Monte Carlo simulations of possible random patterns we have a p-value of 0.008. We reject the null hypothesis because there is substantial evidence of spatial clustering. Now we will repeat this process for crime. If both of these show evidence of clustering then we know we should use spatial models.</p>
+<pre class="r"><code>moran.mc(col_sp$CRIME, listw = col_listw, nsim = 999, alternative = &quot;greater&quot;) # moran&#39;s I test CRIME</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  col_sp$CRIME 
+## weights: col_listw  
+## number of simulations + 1: 1000 
+## 
+## statistic = 0.51546, observed rank = 1000, p-value = 0.001
+## alternative hypothesis: greater</code></pre>
+<p>For crime, our test statistic is 0.51546 (strong clustering) and based on our Monte Carlo simulations we have a p-value of 0.001. We reject the null hypothesis because there is substantial evidence of spatial relationships.</p>
+<div id="spatial-models" class="section level2">
+<h2>Spatial models</h2>
+<p>In order to better quantify the relationship between these two variables accounting for their spatial structure we will use the models proposed by Besag and implemented in CARbayes. In order to run these models, we will use the weights matrix <code>W</code> defined above and model <code>HOVAL</code> by <code>CRIME</code> from the <code>columbus</code> data. In this model we assume a fixed spatial dependence parameter <span class="math inline">\(\rho = 1\)</span> which simplifies the Leroux model to a Besag model (both can be fit using the same function).</p>
+<pre class="r"><code>model.hoval &lt;- CARBayes::S.CARleroux(HOVAL ~ CRIME, data = columbus, W = W, family = &quot;gaussian&quot;, burnin = 20000, n.sample = 100000, thin = 10, rho = 1)</code></pre>
+<pre class="r"><code>model.hoval</code></pre>
+<pre><code>## 
+## #################
+## #### Model fitted
+## #################
+## Likelihood model - Gaussian (identity link function) 
+## Random effects model - Leroux CAR
+## Regression equation - HOVAL ~ CRIME
+## Number of missing observations - 0
+## 
+## ############
+## #### Results
+## ############
+## Posterior quantities and DIC
+## 
+##               Median     2.5%    97.5% n.sample % accept n.effective
+## (Intercept)  60.7439  50.7639  71.0308     8000    100.0      8000.0
+## CRIME        -0.6342  -0.8994  -0.3811     8000    100.0      8000.0
+## nu2         226.2468 155.8390 346.1342     8000    100.0      8000.0
+## tau2          0.0084   0.0021   0.0812     8000    100.0      1417.8
+## rho           0.3841   0.0187   0.8975     8000     46.3      4023.9
+##             Geweke.diag
+## (Intercept)         1.3
+## CRIME              -1.1
+## nu2                -0.7
+## tau2               -2.8
+## rho                 1.2
+## 
+## DIC =  410.1859       p.d =  2.983371       LMPL =  -206.05</code></pre>
+<p>In a Bayesian analysis we are simulating values from the posterior distribution of our parameters. If the middle 95% of distribution (the credible interval) does not cross zero then we can say it is a significant predictor. In this case we are looking at the <code>CRIME</code> parameter and we can see that the credible interval is below 0, meaning there is a significant negative or inverse relationship between crime and home value. The median value of the posterior distribution for <code>CRIME</code> is -0.715, meaning that for every crime recorded in that neighborhood the home value (in thousands) decreases by 0.715. Contextually, this makes sense. If we wanted to compare this model to others, we would use the DIC value, which is 97.4. We would select the model with the lower DIC, but this method is only applicable when the posterior distribution is approximately multivariate normal.</p>
+<p>We can extract all of the simulated <span class="math inline">\(\beta_\text{crime}\)</span> coefficients and plot them to see the distribution.</p>
+<pre class="r"><code>cbus_sim &lt;- data_frame(beta_crime = as.vector(model.hoval$samples$beta[,2]))
+
+ggplot(cbus_sim, aes(x = beta_crime)) +
+  geom_density(fill = &quot;#FFBD71&quot;, color =&quot;#FFBD71&quot;) + 
+  geom_vline(xintercept = -0.8936, color = &quot;#F87D7B&quot;, size = 1.5) +
+  geom_vline(xintercept = -0.3690, color = &quot;#F87D7B&quot;, size = 1.5) + 
+  annotate(&quot;text&quot;, x = -0.65, y = 3.5, label = &quot;Credible interval&quot;, color = &quot;#F87D7B&quot;) + 
+  theme_minimal() +
+  theme(text = element_text(color = &quot;#60717a&quot;)) +
+  labs(title = &quot;Posterior distribution of the crime coefficient&quot;, x = &quot;Beta&quot;, y = &quot;Density&quot;)</code></pre>
+<p><img src="/carbayes-tutorial_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>This is a good visual representation of the credible interval; we can see that our coefficient will almost never be 0!</p>
+</div>
+<div id="evaluating-the-spatial-pattern-of-residuals" class="section level2">
+<h2>Evaluating the spatial pattern of residuals</h2>
+<p>We also want to test to make sure our residuals aren’t clustered. If they are, that means we are missing an important confounding variable. We can check for this clustering with the same Moran’s I test on our residual.</p>
+<pre class="r"><code>moran.mc(x = as.vector(model.hoval$residuals$response), listw = col_listw, nsim = 9999, alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  Monte-Carlo simulation of Moran I
+## 
+## data:  as.vector(model.hoval$residuals$response) 
+## weights: col_listw  
+## number of simulations + 1: 10000 
+## 
+## statistic = 0.17159, observed rank = 9813, p-value = 0.0187
+## alternative hypothesis: greater</code></pre>
+<p>In this example we do see slight clustering in our residuals (I = 0.17), but that is likely because we only used one covariate to describe home patterns. In later iterations we would include more covariates in the model. We can also map the residuals to see where these clusters appear.</p>
+<pre class="r"><code>columbus %&gt;%
+  mutate(resid = model.hoval$residuals$response) %&gt;%
+  ggplot(aes(fill = resid)) +
+  geom_sf() + 
+  map_theme +
+  map_colors +
+  labs(title = &quot;Residuals from the CAR model&quot;, subtitle = &quot;home value ~ crime&quot;, fill = &quot;Residual&quot;)</code></pre>
+<p><img src="/carbayes-tutorial_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>In order to choose our next covariate, we can start by thinking about what kinds of variables might explain this pattern in the residual. One idea might be to include distance to the Central Business District!</p>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<p>The model we’ve fit in this tutorial are a great place to start with Bayesian CAR models. The Besag model gives us fairly familiar results: coefficients which we can interpret just as we might in a more basic linear regression context. However, it gives more accurate predictions because it accounts for the underlying structure in the data. There are many layers of complexity we can add to make these models do more for us. Many of those improvements simply require adding new parameters or constraints to the Besag model!</p>
+<p>One limitation of these CAR models is that they are parametric. This could be a strength or a limitation depending on the data we’re interested in! The methods are also computationally expensive – when working with large amounts of data or covariates, a single model can take several minutes to run. This is less a weakness of the methodology and more a symptom of working with complex spatial data.</p>
+<p>As a package, <code>CARBayes</code> is incredibly versatile. There are several other models and corresponding functions in the package which we haven’t discussed, so if the models presented here don’t fit your needs, check out the <a href="https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf">vignette</a>! If you’ve got any other questions, feel free to reach out!</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+</div>
+
+         <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "@ravenmcknight" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+  <script>
+  $(document).ready(function () {
+    window.initializeCodeFolding("show" === "show");
+  });
+  </script>
+  <script src="/js/codefolding.js"></script>
+
+
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
+
+<script src="//yihui.name/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+
+
+
+
+
+          </div>
+      </div>
+  </div>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.cookie.js"> </script>
+<script src="/js/ekko-lightbox.js"></script>
+<script src="/js/jquery.scrollTo.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/front.js"></script>
+
+
+
+   
+  <script>
+  $(document).ready(function () {
+    window.initializeCodeFolding("show" === "show");
+  });
+  </script>
+  <script src="/js/codefolding.js"></script>
+
+  
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
+
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  
+
+
+
+
+</body>
+</html>

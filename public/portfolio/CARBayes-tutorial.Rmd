@@ -6,6 +6,7 @@ output:
  blogdown:::html_document
 description: "A tutorial for fitting conditional autoregressive models in R using the CARBayes package."
 bibliography: Library.bib
+codefolding_show: "show"
 ---
 
 ```{r setup, include = FALSE}

@@ -42,18 +42,6 @@ if (!doNotTrack) {
 <script async src='https://www.google-analytics.com/analytics.js'></script>
 
 </head>
-
-<div id="code-folding-buttons" class="btn-group pull-right">
-  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast="">
-    <span>code</span> 
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" style="min-width: 50px;">
-  <li><a id="rmd-show-all-code" href="#">show all code</a>
-  </li><li><a id="rmd-hide-all-code" href="#">hide all code</a></li>
-  </ul>
-</div>
-
 <body>
   <div id="all">
       <div class="container-fluid">
@@ -278,7 +266,7 @@ moran.mc(col_sp$HOVAL, listw = col_listw, nsim = 999, alternative = &quot;greate
 ## weights: col_listw  
 ## number of simulations + 1: 1000 
 ## 
-## statistic = 0.22134, observed rank = 987, p-value = 0.013
+## statistic = 0.22134, observed rank = 993, p-value = 0.007
 ## alternative hypothesis: greater</code></pre>
 <p>For home value, our test statistic is 0.22134 (moderate positive correlation) and based on our Monte Carlo simulations of possible random patterns we have a p-value of 0.008. We reject the null hypothesis because there is substantial evidence of spatial clustering. Now we will repeat this process for crime. If both of these show evidence of clustering then we know we should use spatial models.</p>
 <pre class="r"><code>moran.mc(col_sp$CRIME, listw = col_listw, nsim = 999, alternative = &quot;greater&quot;) # moran&#39;s I test CRIME</code></pre>
@@ -312,19 +300,19 @@ moran.mc(col_sp$HOVAL, listw = col_listw, nsim = 999, alternative = &quot;greate
 ## Posterior quantities and DIC
 ## 
 ##               Median     2.5%    97.5% n.sample % accept n.effective
-## (Intercept)  60.6631  50.6361  70.7297     8000    100.0      8687.3
-## CRIME        -0.6319  -0.8948  -0.3780     8000    100.0      8000.0
-## nu2         228.2459 156.2268 347.2061     8000    100.0      8000.0
-## tau2          0.0080   0.0021   0.0841     8000    100.0      1512.8
-## rho           0.4054   0.0230   0.9038     8000     46.4      3547.6
+## (Intercept)  60.6732  50.4982  70.4390     8000    100.0      8000.0
+## CRIME        -0.6351  -0.8961  -0.3725     8000    100.0      8000.0
+## nu2         228.2552 156.9127 349.8259     8000    100.0      8000.0
+## tau2          0.0081   0.0021   0.0774     8000    100.0      1697.1
+## rho           0.3935   0.0231   0.9074     8000     46.3      3033.0
 ##             Geweke.diag
-## (Intercept)        -0.4
-## CRIME               0.2
-## nu2                 0.2
-## tau2               -2.1
-## rho                -0.2
+## (Intercept)         1.0
+## CRIME              -1.4
+## nu2                -0.4
+## tau2               -0.8
+## rho                 1.6
 ## 
-## DIC =  410.1122       p.d =  2.943763       LMPL =  -205.96</code></pre>
+## DIC =  410.1917       p.d =  2.982781       LMPL =  -206.02</code></pre>
 <p>In a Bayesian analysis we are simulating values from the posterior distribution of our parameters. If the middle 95% of distribution (the credible interval) does not cross zero then we can say it is a significant predictor. In this case we are looking at the <code>CRIME</code> parameter and we can see that the credible interval is below 0, meaning there is a significant negative or inverse relationship between crime and home value. The median value of the posterior distribution for <code>CRIME</code> is -0.715, meaning that for every crime recorded in that neighborhood the home value (in thousands) decreases by 0.715. Contextually, this makes sense. If we wanted to compare this model to others, we would use the DIC value, which is 97.4. We would select the model with the lower DIC, but this method is only applicable when the posterior distribution is approximately multivariate normal.</p>
 <p>We can extract all of the simulated <span class="math inline">\(\beta_\text{crime}\)</span> coefficients and plot them to see the distribution.</p>
 <pre class="r"><code>cbus_sim &lt;- data_frame(beta_crime = as.vector(model.hoval$samples$beta[,2]))
@@ -351,7 +339,7 @@ ggplot(cbus_sim, aes(x = beta_crime)) +
 ## weights: col_listw  
 ## number of simulations + 1: 10000 
 ## 
-## statistic = 0.17119, observed rank = 9818, p-value = 0.0182
+## statistic = 0.17116, observed rank = 9839, p-value = 0.0161
 ## alternative hypothesis: greater</code></pre>
 <p>In this example we do see slight clustering in our residuals (I = 0.17), but that is likely because we only used one covariate to describe home patterns. In later iterations we would include more covariates in the model. We can also map the residuals to see where these clusters appear.</p>
 <pre class="r"><code>columbus %&gt;%
@@ -413,18 +401,6 @@ ggplot(cbus_sim, aes(x = beta_crime)) +
     </div>
   </div>
 </div>
-<script src="//yihui.name/js/math-code.js"></script>
-<script async
-src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
-
-  <script src="/js/collapse.js"></script>
-  <script src="/js/dropdown.js"></script>
-  <script src="/js/transition.js"></script>
-
-
  
   <script>
   $(document).ready(function () {
@@ -432,6 +408,19 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
   });
   </script>
   <script src="/js/codefolding.js"></script>
+
+
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
+
+<script src="//yihui.name/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+
 
 
 
@@ -451,25 +440,26 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
 
 
 
-  <script src="//yihui.name/js/math-code.js"></script>
-<script async
-src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
-
-  <script src="/js/collapse.js"></script>
-  <script src="/js/dropdown.js"></script>
-  <script src="/js/transition.js"></script>
-
-
- 
+   
   <script>
   $(document).ready(function () {
     window.initializeCodeFolding("show" === "show");
   });
   </script>
   <script src="/js/codefolding.js"></script>
+
+  
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
+
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  
+
 
 
 
