@@ -8,14 +8,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
-<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
-<link rel="stylesheet" href="../../css/font-awesome.min.css">
-<link rel="stylesheet" href="../../css/owl.carousel.css">
-<link rel="stylesheet" href="../../css/owl.theme.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/owl.carousel.css">
+<link rel="stylesheet" href="/css/owl.theme.css">
 
 
-  <link href="../../css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
+  <link href="/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
 
  
 
@@ -27,8 +27,8 @@
   
 
 
-<link href="../../css/custom.css" rel="stylesheet">
-<link rel="shortcut icon" href="../../img/favicon.png">
+<link href="/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="/img/favicon.png">
 
 
 <script type="application/javascript">
@@ -50,17 +50,17 @@ if (!doNotTrack) {
           <div class="row row-offcanvas row-offcanvas-left">
               <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
   <div class="sidebar-content">
-    <h1 class="sidebar-heading"><a href="../../">raven mcknight</a></h1>
+    <h1 class="sidebar-heading"><a href="/">raven mcknight</a></h1>
     
       <p class="sidebar-p">stats! data science! visualization!</p>
     
     <ul class="sidebar-menu">
       
-        <li><a href="../../portfolio/">Home</a></li>
+        <li><a href="/portfolio/">Home</a></li>
       
-        <li><a href="../../about/">About</a></li>
+        <li><a href="/about/">About</a></li>
       
-        <li><a href="../../contact/">Get in touch</a></li>
+        <li><a href="/contact/">Get in touch</a></li>
       
     </ul>
     <p class="social">
@@ -107,7 +107,7 @@ if (!doNotTrack) {
 <div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
   <div class="small-navbar visible-xs">
   <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
-  <h1 class="small-navbar-heading"><a href="../../">raven mcknight</a></h1>
+  <h1 class="small-navbar-heading"><a href="/">raven mcknight</a></h1>
 </div>
 
   <div class="row">
@@ -119,15 +119,15 @@ if (!doNotTrack) {
         
          <h1>Spatial Bayesian Models of Contraceptive Deserts</h1>
          
-<script src="../../rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="../../rmarkdown-libs/jquery/jquery.min.js"></script>
-<link href="../../rmarkdown-libs/leaflet/leaflet.css" rel="stylesheet" />
-<script src="../../rmarkdown-libs/leaflet/leaflet.js"></script>
-<link href="../../rmarkdown-libs/leafletfix/leafletfix.css" rel="stylesheet" />
-<script src="../../rmarkdown-libs/Proj4Leaflet/proj4-compressed.js"></script>
-<script src="../../rmarkdown-libs/Proj4Leaflet/proj4leaflet.js"></script>
-<link href="../../rmarkdown-libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
-<script src="../../rmarkdown-libs/leaflet-binding/leaflet.js"></script>
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/leaflet/leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet/leaflet.js"></script>
+<link href="/rmarkdown-libs/leafletfix/leafletfix.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4-compressed.js"></script>
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4leaflet.js"></script>
+<link href="/rmarkdown-libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet-binding/leaflet.js"></script>
 
 
 <p>Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods – Bayesian and frequentist! – aren’t useful in modelling spatial data. In this series of blog posts, Katie Jolly, Son Phan, and I will explore Bayesian methods to describe variation across space.</p>
@@ -221,14 +221,14 @@ ggplot() +
   theme_minimal() +
   project_colors +
   project_theme_map</code></pre>
-<p><img src="../../portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>With this map, we can start to identify counties with particularly high patient-to-clinic ratios. My goal in this project is to use spatial Bayesian models to identify clusters of limited access to birth control.</p>
 </div>
 <div id="spatial-autocorrelation" class="section level4">
 <h4>Spatial autocorrelation?</h4>
 <p>Before we go on with spatial modeling, we should confirm that our data isn’t spatially random. If it <em>is</em>, then we don’t need to use spatial methods. We can check for spatial autocorrelation using Moran’s I. If Moran’s I is close to 1, we have positive spatial autocorrelation and if it’s close to -1, we have negative autocorrelation.</p>
 <div class="figure">
-<img src="../../portfolio/contraceptive-deserts-bayes_files/spat_cor.png" />
+<img src="/portfolio/contraceptive-deserts-bayes_files/spat_cor.png" />
 
 </div>
 <p>We can check if our data is spatially random by randomly assigning values to each county in North Carolina 10000 times and taking the Moran’s I of each simulation. Then, we compare our <em>real</em> data to the simulated data. If our data is “less random” than any of our simulations, we can feel confident that we need to use spatial methods.</p>
@@ -275,7 +275,7 @@ predictors %&gt;%
     facet_wrap(~var, scales= &quot;free&quot;, labeller = as_labeller(titles)) +
     theme_minimal() +
     project_theme_plot</code></pre>
-<p><img src="../../portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>predictors %&gt;%
   gather(-WomenPerClinic, key = &quot;var&quot;, value = &quot;value&quot;) %&gt;%
   ggplot(aes(x = value, y = WomenPerClinic)) +
@@ -283,16 +283,16 @@ predictors %&gt;%
     facet_wrap(~ var, scales = &quot;free&quot;, labeller = as_labeller(titles)) +
     theme_minimal() +
     project_theme_plot </code></pre>
-<p><img src="../../portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<p><img src="/portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
 <p>To better understand these relationships, I’ll fit a Leroux model using four of these predictors so we can see which are most “important.” For more on models like this, you can check out <a href="https://www.katiejolly.io/spatial-bayesian-project/?fbclid=IwAR0HNqJHMVZmKKpJ9EpDh4i7NXckkt7AgpWO8Htt-3fUZ_nfhHq4hXFR6qw">Katie’s case study</a>. She fits Besag models which are the precursor to Leroux! The Leroux model is essentially an extension of the Besag model – it’s main advantage is that it handles <em>overdispersion</em> with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with “real-world” spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren’t too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects.</p>
 <div class="figure">
-<img src="../../portfolio/contraceptive-deserts-bayes_files/lerouxstatement.png" />
+<img src="/portfolio/contraceptive-deserts-bayes_files/lerouxstatement.png" />
 
 </div>
 <p>We’ll need the CARBayes package to implement our CAR models. This package includes several primary functions, each of which corresponds to a different model with different priors and model structures. For more technical explanation of the entire package, check out the <a href="https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf">vignette</a>.</p>
 <p>The last thing we need to start fitting models is a <em>neighborhood structure</em>. This model uses a queen neighborhood structure. This means that any two counties that share a single point of contact are considered neighbors. We represent the neighborhood structure using binary matrix W, which has entries equal to 1 for polygons that are neighbors and 0 for polygons that are not.</p>
 <div class="figure">
-<img src="../../portfolio/contraceptive-deserts-bayes_files/neighborhoods.png" />
+<img src="/portfolio/contraceptive-deserts-bayes_files/neighborhoods.png" />
 
 </div>
 <p>I decided to leave out percent rural as a predictor because some very rural counties have so few women they can’t count as a desert by our metric! This was throwing off the rest of the coefficients; it’s more informative to look at this model with fewer predictors. I’m also taking fewer Markov Chain Monte Carlo simulations than I would ideally because these models are computationally expensive and can take a long time to run.</p>
@@ -356,7 +356,7 @@ nc_leroux &lt;- S.CARleroux(formula=formula, data=nc_sp_mod, family=&quot;gaussi
 <p>Generally, CAR models such as BYM or Leroux force a single global level of spatial autocorrelation. The assumption of smoothness is often broken by real-world data which can exhibit local autocorrelation, or clustering. The Lee and Mitchell model I’ll fit here deals with local autocorrelation in two ways: first, it allows us to specify covariates as above in the Leroux model. Second, it uses random effects to model local autocorrelation even in the case of unmeasured confounding when we don’t know which covariates are causing the variation.</p>
 <p>Like the globally-smooth models above, Lee &amp; Mitchell use a neighborhood matrix W. In the Leroux model we fit, W is binary and values are assumed to be fixed at either 0 or 1. The Lee &amp; Mitchell prior attempts to model the values in W as if they were random quantities rather than fixed. It models each entry in W as the <em>dissimilarity</em> between polygons. The model takes q non-negative dissimilarity metrics z. These metrics are our covariates – they can be physical characteristics of the polygons (such as proportion of land covered by water) or demographics (such as percent high school grad or median income!). The formal model statement is below. More details can be found in the <a href="https://cran.r-project.org/web/packages/CARBayes/vignettes/CARBayes.pdf">vignette</a> or the <a href="https://academic.oup.com/biostatistics/article/13/3/415/248273">original paper</a>. Note there is also a non-binary option which can be specified by setting <code>W.binary = FALSE</code> below.</p>
 <div class="figure">
-<img src="../../portfolio/contraceptive-deserts-bayes_files/leemitchellstatement.png" />
+<img src="/portfolio/contraceptive-deserts-bayes_files/leemitchellstatement.png" />
 
 </div>
 <p>Without getting too bogged down in the details, this model essentially says that the entries in neighborhood matrix W are 1 if a dissimilarity metric z is different enough in areal units k and j. The priors are given uniform distributions with varying maxiumum values to ensure priors are vague.</p>
@@ -429,7 +429,7 @@ ggplot() +
   theme_minimal() +
   project_colors +
   project_theme_map</code></pre>
-<p><img src="../../portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="/portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>I’m very happy with these results! We can see that Wake County, where Raleigh is, is almost entirely enclosed. This makes sense as it’s the most urban county in the area – we should expect health care services to be different in a metropolitan area than elsewhere. Similar boundaries have been located around Guilford County, home to another metro area (Winston-Salem), and in Western North Carolina (where I’m from!).</p>
 </div>
 <div id="bonus-interactive-results" class="section level4">
@@ -501,25 +501,15 @@ results_map</code></pre>
 </div>
 
          <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "ravenmcknight" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://ravenmcknight.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
       </div>
     </div>
   </div>
@@ -536,18 +526,19 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
 
 
 
+
           </div>
       </div>
   </div>
-  <script src="../../js/jquery.min.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/jquery.cookie.js"> </script>
-<script src="../../js/ekko-lightbox.js"></script>
-<script src="../../js/jquery.scrollTo.min.js"></script>
-<script src="../../js/masonry.pkgd.min.js"></script>
-<script src="../../js/imagesloaded.pkgd.min.js"></script>
-<script src="../../js/owl.carousel.min.js"></script>
-<script src="../../js/front.js"></script>
+  <script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.cookie.js"> </script>
+<script src="/js/ekko-lightbox.js"></script>
+<script src="/js/jquery.scrollTo.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/front.js"></script>
 
 
 
@@ -557,12 +548,12 @@ src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM
     window.initializeCodeFolding("show" === "show");
   });
   </script>
-  <script src="../../js/codefolding.js"></script>
+  <script src="/js/codefolding.js"></script>
 
   
-  <script src="../../js/collapse.js"></script>
-  <script src="../../js/dropdown.js"></script>
-  <script src="../../js/transition.js"></script>
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
 
   <script src="//yihui.name/js/math-code.js"></script>
 <script async
