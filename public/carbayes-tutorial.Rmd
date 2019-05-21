@@ -1,19 +1,7 @@
 ---
-title: CARBayes Tutorial
-author: Katie Jolly and Raven McKnight
-date: '2019-05-02'
-slug: carbayes-tutorial
-categories: []
-tags: []
-image: ''
-showonlyimage: no
----
----
 title: "CARBayes Tutorial"
 author: "Katie Jolly and Raven McKnight"
 date: "5/2/2019"
-output:
- blogdown:::html_document
 description: "A tutorial for fitting conditional autoregressive models in R using the CARBayes package."
 bibliography: Library.bib
 ---

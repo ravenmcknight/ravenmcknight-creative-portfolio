@@ -6,6 +6,7 @@ image: img/portfolio/nc_boundaries_thick.png
 output:
   blogdown:::html_document
 description: "Using spatial Bayesian methods to model access to birth control."
+bibliography: Library.bib
 ---
 
 ```{r setup, include = FALSE}
