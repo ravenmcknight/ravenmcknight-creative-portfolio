@@ -3,7 +3,7 @@
 <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Spatial Bayesian Models of Contraceptive Deserts</title>
-<meta name="description" content="Raven McKnight&#39;s personal website">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="all,follow">
 <meta name="googlebot" content="index,follow,snippet,archive">
@@ -42,6 +42,18 @@ if (!doNotTrack) {
 <script async src='https://www.google-analytics.com/analytics.js'></script>
 
 </head>
+
+<div id="code-folding-buttons" class="btn-group pull-right">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast="">
+    <span>code</span> 
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" style="min-width: 50px;">
+  <li><a id="rmd-show-all-code" href="#">show all code</a>
+  </li><li><a id="rmd-hide-all-code" href="#">hide all code</a></li>
+  </ul>
+</div>
+
 <body>
   <div id="all">
       <div class="container-fluid">
@@ -102,6 +114,18 @@ if (!doNotTrack) {
 </div>
 
               
+
+<div id="code-folding-buttons" class="btn-group pull-right">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast="">
+    <span>code</span> 
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" style="min-width: 50px;">
+  <li><a id="rmd-show-all-code" href="#">show all code</a>
+  </li><li><a id="rmd-hide-all-code" href="#">hide all code</a></li>
+  </ul>
+</div>
+
 <div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
   <div class="small-navbar visible-xs">
   <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
@@ -124,7 +148,7 @@ if (!doNotTrack) {
 <script src="/rmarkdown-libs/leaflet-binding/leaflet.js"></script>
 
 
-<p>Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods – Bayesian and frequentist! – aren’t useful in modelling spatial data. In this series of blog posts, we’ll explore Bayesian methods to describe variation across space.</p>
+<p>Spatial data violates one of the most basic assumptions in statistics: that our observations are independent of one another. This means that many of our familiar methods – Bayesian and frequentist! – aren’t useful in modelling spatial data. In this series of blog posts, Katie Jolly, Son Phan, and I will explore Bayesian methods to describe variation across space.</p>
 <div id="case-study-contracpetive-deserts" class="section level3">
 <h3>Case study: Contracpetive Deserts</h3>
 <p>Birth control is a critical aspect of basic health care. Accessible contraceptive services reduce unplanned pregnancies, lower abortion rates, and empower women to navigate the world and their health more freely. Over 20 million women in the United States are in need of publicly-funded birth control and over 1 million of them live in a county without a single provider.</p>
@@ -245,7 +269,7 @@ moran.mc(na.omit(nc_sp$WomenPerClinic), nc_w, nsim = 9999) # markov chain simula
 </div>
 <div id="car-models" class="section level4">
 <h4>CAR Models</h4>
-<p>To handle spatial autocorrelation in our data, we’ll fit Conditional Autoregressive (CAR) models using the <code>CARBayes</code> package. CAR models are often used to model areal data such as disease risk in epidemiology, ecologocial phenomena, or housing prices. They are most often fit in Bayesian contexts using random effects to model spatial autocorrelation. Hierarchical Bayesian models are particularly helfpul in dealing with the structure of spatial data. I’ll fit two types of CAR models below – one which assumes a global level of smoothness in spatial autocorrelation and one which seeks to identify boundaries or breaks in the response surface. More on CAR models and how to implement them coming soon!</p>
+<p>To handle spatial autocorrelation in our data, we’ll fit Conditional Autoregressive (CAR) models using the <code>CARBayes</code> package. CAR models are often used to model areal data such as disease risk in epidemiology, ecologocial phenomena, or housing prices. They are most often fit in Bayesian contexts using random effects to model spatial autocorrelation. Hierarchical Bayesian models are particularly helfpul in dealing with the structure of spatial data. I’ll fit two types of CAR models below – one which assumes a global level of smoothness in spatial autocorrelation and one which seeks to identify boundaries or breaks in the response surface. For more on implementing CAR models with CARBayes, check out Katie and I’s <a href="https://www.ravenmcknight.com/portfolio/CARBayes-tutorial">tutorial</a>!</p>
 </div>
 <div id="a-familiar-model-variable-selection" class="section level4">
 <h4>A Familiar Model &amp; Variable Selection</h4>
@@ -278,7 +302,7 @@ predictors %&gt;%
     theme_minimal() +
     project_theme_plot </code></pre>
 <p><img src="/portfolio/contraceptive-deserts-bayes_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
-<p>To better understand these relationships, I’ll fit a Leroux model using four of these predictors so we can see which are most “important.” For more on models like this, you can check out <a href="http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/">Katie’s case study</a>. She fits Besag-York-Mollie (BYM) models which are the precursor to Leroux! The Leroux model is essentially an extension of the BYM model – it’s main advantage is that it handles <em>overdispersion</em> with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with “real-world” spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren’t too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects.</p>
+<p>To better understand these relationships, I’ll fit a Leroux model using four of these predictors so we can see which are most “important.” For more on models like this, you can check out <a href="https://www.katiejolly.io/spatial-bayesian-project/?fbclid=IwAR0HNqJHMVZmKKpJ9EpDh4i7NXckkt7AgpWO8Htt-3fUZ_nfhHq4hXFR6qw">Katie’s case study</a>. She fits Besag models which are the precursor to Leroux! The Leroux model is essentially an extension of the Besag model – it’s main advantage is that it handles <em>overdispersion</em> with a specific parameter. Overdispersion occurs when there is more variability in the data than we expect for a given model or data structure. This can occur fairly frequently with “real-world” spatial data, so Leroux offers an advantage in many cases. The formal model statement is below, but the details aren’t too important for our purposes. The main takeaways about Leroux are that 1) it enforces global smoothness and 2) it models spatial autocorrelation with a single set of random effects.</p>
 <div class="figure">
 <img src="/portfolio/contraceptive-deserts-bayes_files/lerouxstatement.png" />
 
@@ -484,11 +508,12 @@ results_map</code></pre>
 <h3>Conclusions</h3>
 <p>CARBayes gives us some great tools to start modelling accessibility! We were able to identify some potential covariates and start locating boundaries between clusters! One major limitation of this implementation is that the model locates boundaries as points rather than lines or polygons which makes it difficult to identify closed clusters. There is no simple way to extract the identified clusters, so our analysis sort of ends with visualization. This works well for a single state but would be overwhelming, I think, on the entire country.</p>
 <p>There is a lot of exciting future work for this project. There are many other CAR prior we could apply, and dozens of covariates we haven’t considered yet! As I mentioned in the beginning of this post, the accessibility metric we’re using is very simple. A more thorough metric could give us a very different picture of accessibility!</p>
-<p>For more case studies, check out <a href="https://sonphan.netlify.com/post/transit-bayes/">Son’s post on public transit</a> or <a href="http://www.katiejolly.io/portfolio/bayesian-spatial-modeling/">Katie’s post on vaccination in California</a>!</p>
+<p>For more case studies, check out <a href="https://sonphan.netlify.com/post/transit-bayes/">Son’s post on public transit</a> or <a href="https://www.katiejolly.io/spatial-bayesian-project/?fbclid=IwAR0HNqJHMVZmKKpJ9EpDh4i7NXckkt7AgpWO8Htt-3fUZ_nfhHq4hXFR6qw">Katie’s post on vaccination in California</a>!</p>
 </div>
-<div id="sources" class="section level3">
-<h3>Sources</h3>
+<div id="references" class="section level3">
+<h3>References</h3>
 <p>Besag J, York J, Mollie A (1991). “Bayesian Image Restoration with Two Applications in Spatial Statistics.” Annals of the Institute of Statistics and Mathematics, 43, 1–59.</p>
+<p>Lee, D. (2013). CARBayes: an R package for Bayesian spatial modeling with conditional autoregressive priors. Journal of Statistical Software, 55(13), 1-24.</p>
 <p>Lee D, Mitchell R (2012). “Boundary Detection in Disease Mapping Studies.” Biostatistics, 13, 415–426.</p>
 <p>Leroux B, Lei X, Breslow N (2000). “Estimation of Disease Rates in Small Areas: A New Mixed Model for Spatial Dependence.” In M Halloran, D Berry (eds.), Statistical Models in Epidemiology, the Environment and Clinical Trials, pp. 179–191. Springer-Verlag, New York.</p>
 </div>
@@ -506,7 +531,7 @@ results_map</code></pre>
             return;
         }
         var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "ravenmcknight" + '.disqus.com/embed.js';
+        s.src = '//' + "@ravenmcknight" + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
@@ -517,6 +542,28 @@ results_map</code></pre>
     </div>
   </div>
 </div>
+<script src="//yihui.name/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
+
+
+ 
+  <script>
+  $(document).ready(function () {
+    window.initializeCodeFolding("show" === "show");
+  });
+  </script>
+  <script src="/js/codefolding.js"></script>
+
+
+
 
           </div>
       </div>
@@ -530,6 +577,28 @@ results_map</code></pre>
 <script src="/js/imagesloaded.pkgd.min.js"></script>
 <script src="/js/owl.carousel.min.js"></script>
 <script src="/js/front.js"></script>
+
+
+
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async
+src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+
+  <script src="/js/collapse.js"></script>
+  <script src="/js/dropdown.js"></script>
+  <script src="/js/transition.js"></script>
+
+
+ 
+  <script>
+  $(document).ready(function () {
+    window.initializeCodeFolding("show" === "show");
+  });
+  </script>
+  <script src="/js/codefolding.js"></script>
 
 
 
