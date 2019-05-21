@@ -30,33 +30,33 @@ code .MathJax {
 
 
 .content-column-content h1 {
-	font-family: 'Oswald';
+	font-family: 'Oswald', cursive;
 	text-transform: uppercase;
 }
 
 .content-column-content h2 {
-	font-family: 'Oswald Light';
+	font-family: 'Oswald Light', cursive;
 	text-transform: uppercase;
 }
 
 .content-column-content h3 {
-	font-family: 'Oswald Light';
+	font-family: 'Oswald Light', cursive;
 	text-transform: uppercase;
 }
 
 .content-column-content h4 {
-	font-family: 'Oswald Light';
+	font-family: 'Oswald Light', cursive;
 	text-transform: uppercase;
 }
 
 
 .content-column-content h5 {
-	font-family: 'Oswald Light';
+	font-family: 'Oswald Light', cursive;
 	text-transform: uppercase;
 }
 
 .content-column-content h6 {
-	font-family: 'Oswald Light';
+	font-family: 'Oswald Light', cursive;
 	text-transform: uppercase;
 }
 .content-column-content p {
@@ -66,7 +66,7 @@ code .MathJax {
 
 h4 a {
 	color: #8e8d8a;
-	font-family: 'Oswald';
+	font-family: 'Oswald', cursive;
 	font-size: 24px;
 }
 
