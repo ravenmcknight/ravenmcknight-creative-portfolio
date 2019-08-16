@@ -4,7 +4,7 @@
 
 
 @import url('https://fonts.googleapis.com/css?family=Abril+Fatface|Comfortaa|Righteous');
-@import url('https://fonts.googleapis.com/css?family=Lato|Oswald|Karla');
+@import url('https://fonts.googleapis.com/css?family=Lato|Oswald|Raleway');
 
 
 code .MathJax {
@@ -19,11 +19,11 @@ code .MathJax {
 }
 
 .box-masonry-description p {
-	font-family: 'Karla'
+	font-family: 'Raleway'
 }
 
 .sidebar-p {
-	font-family: 'Karla';
+	font-family: 'Raleway';
 	font-size: 16px;
 	color: #606060;
 }
@@ -60,7 +60,7 @@ code .MathJax {
 	text-transform: uppercase;
 }
 .content-column-content p {
-	font-family: 'Karla';
+	font-family: 'Raleway';
 	color: #606060;
 }
 
